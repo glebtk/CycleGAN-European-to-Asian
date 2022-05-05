@@ -1,0 +1,13 @@
+/.idea/*
+/__pycache__/*
+/dataset/train/class_A/*
+/dataset/train/class_B/*
+/checkpoints/disc_a.pth.tar
+/checkpoints/disc_b.pth.tar
+/checkpoints/gen_a.pth.tar
+/checkpoints/gen_b.pth.tar
+/saved_images/*.png
+/saved_images/fake_a/
+!/saved_images/fake_a/.gitkeep
+/saved_images/fake_b/
+!/saved_images/fake_b/.gitkeep
