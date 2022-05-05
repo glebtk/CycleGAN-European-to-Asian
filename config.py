@@ -12,10 +12,10 @@ LEARNING_RATE = 3e-5
 LAMBDA_IDENTITY = 0.0
 LAMBDA_CYCLE = 10
 NUM_WORKERS = 2
-NUM_EPOCHS = 100
-LOAD_MODEL = False
+NUM_EPOCHS = 1
+LOAD_MODEL = True
 SAVE_MODEL = True
-TEST_EVERY_EPOCH = True
+TEST_EVERY_EPOCH = False
 CHECKPOINT_GEN_A = "gen_a.pth.tar"
 CHECKPOINT_GEN_B = "gen_b.pth.tar"
 CHECKPOINT_DISC_A = "disc_a.pth.tar"
@@ -44,7 +44,6 @@ test_transforms = A.Compose(
     [
         A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE),
         A.Normalize(mean=DATASET_MEAN, std=DATASET_MEAN, max_pixel_value=255),
-        # A.Normalize(mean=[0.5298, 0.4365, 0.3811], std=[0.2104, 0.1828, 0.1795], max_pixel_value=255),
         ToTensorV2(),
      ],
 )

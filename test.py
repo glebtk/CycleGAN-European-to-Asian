@@ -19,7 +19,7 @@ def test(img_dir="test_images/", save_dir="saved_images/", name="test.png"):
     images = [np.array(img) for img in images]  # PIL Images -> np.arrays
     images = [config.test_transforms(image=img)["image"] for img in images]  # Transforms
     images = torch.stack(images)  # List of tensors -> Tensor
-
+    images = images.to(config.DEVICE)
     # Загружаем модели генераторов:
     gen_B = Generator(in_channels=config.IN_CHANNELS, num_residuals=9).to(config.DEVICE)
     gen_A = Generator(in_channels=config.IN_CHANNELS, num_residuals=9).to(config.DEVICE)
