@@ -6,15 +6,11 @@ from torch.utils.data import DataLoader
 from dataset import ABDataset
 
 
-def compute_stats():
-    pass
-
-
 def main():
     dataset = ABDataset(
         root_a=config.TRAIN_DIR + "/class_A",
         root_b=config.TRAIN_DIR + "/class_B",
-        transform=config.transforms,
+        transform=config.train_transforms,
     )
 
     data_loader = DataLoader(
@@ -49,7 +45,6 @@ def main():
     # output
     print('mean: ' + str(total_mean))
     print('std:  ' + str(total_std))
-
 
 
 if __name__ == "__main__":

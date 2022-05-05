@@ -18,7 +18,7 @@ def test(img_dir="dataset/train/class_A", save_dir="saved_images/", name="test.p
         images = images[:10]
         images = [Image.open(img_dir + img).convert("RGB") for img in images]  # Names -> PIL Images
         images = [np.array(img) for img in images]  # PIL Images -> np.arrays
-        images = [config.transforms(image=img)["image"] for img in images]  # Transforms
+        images = [config.train_transforms(image=img)["image"] for img in images]  # Transforms
         images = torch.stack(images)  # List of tensors -> Tensor
 
         # Собираем результат в одну картинку

@@ -21,8 +21,11 @@ CHECKPOINT_GEN_B = "gen_b.pth.tar"
 CHECKPOINT_DISC_A = "disc_a.pth.tar"
 CHECKPOINT_DISC_B = "disc_b.pth.tar"
 
+DATASET_MEAN = torch.tensor([0.5298, 0.4365, 0.3811])
+DATASET_STD = torch.tensor([0.2104, 0.1828, 0.1795])
+
 # For training:
-transforms = A.Compose(
+train_transforms = A.Compose(
     [
         A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE),
         A.HorizontalFlip(p=0.5),
@@ -30,7 +33,7 @@ transforms = A.Compose(
         A.ElasticTransform(p=1.0, alpha=1.0, sigma=50.0, alpha_affine=5.0),
         A.ISONoise(p=1.0, intensity=(0.1, 0.5), color_shift=(0.01, 0.05)),
         A.RandomContrast(p=1.0, limit=(-0.1, 0.1)),
-        A.Normalize(mean=[0.5298, 0.4365, 0.3811], std=[0.2104, 0.1828, 0.1795], max_pixel_value=255),
+        A.Normalize(mean=DATASET_MEAN, std=DATASET_STD, max_pixel_value=255),
         ToTensorV2(),
      ],
     additional_targets={"image0": "image"},
@@ -40,7 +43,7 @@ transforms = A.Compose(
 test_transforms = A.Compose(
     [
         A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE),
-        A.Normalize(mean=[0.5298, 0.4365, 0.3811], std=[0.2104, 0.1828, 0.1795], max_pixel_value=255),
+        A.Normalize(mean=DATASET_MEAN, std=DATASET_MEAN, max_pixel_value=255),
         # A.Normalize(mean=[0.5298, 0.4365, 0.3811], std=[0.2104, 0.1828, 0.1795], max_pixel_value=255),
         ToTensorV2(),
      ],

@@ -42,7 +42,7 @@ def test(img_dir="test_images/", save_dir="saved_images/", name="test.png"):
     result = torchvision.utils.make_grid(result, nrow=len(images))
 
     # Сохраняем
-    result = result*0.5+0.5
+    result = result * config.DATASET_STD + config.DATASET_MEAN
     torchvision.utils.save_image(result, save_dir + name)
     print("Successfully saved!")
 

@@ -84,8 +84,8 @@ def train(gen_A, gen_B, disc_A, disc_B, data_loader, opt_gen, opt_disc, L1, MSE,
         g_scaler.update()
 
         if idx % 50 == 0:
-            save_image(fake_a_image * 0.5 + 0.5, f"saved_images/fake_a/fake_a_{int(time.time())}.png")
-            save_image(fake_b_image * 0.5 + 0.5, f"saved_images/fake_b/fake_b_{int(time.time())}.png")
+            save_image(fake_a_image * config.DATASET_STD + config.DATASET_MEAN, f"saved_images/fake_a/fake_a_{int(time.time())}.png")
+            save_image(fake_b_image * config.DATASET_STD + config.DATASET_MEAN, f"saved_images/fake_b/fake_b_{int(time.time())}.png")
 
 
 def main():
@@ -119,7 +119,7 @@ def main():
     dataset = ABDataset(
         root_a=config.TRAIN_DIR + "/class_A",
         root_b=config.TRAIN_DIR + "/class_B",
-        transform=config.transforms,
+        transform=config.train_transforms,
     )
 
     data_loader = DataLoader(

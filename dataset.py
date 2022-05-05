@@ -66,7 +66,7 @@ def test():
     dataset = ABDataset(
         root_a=config.TRAIN_DIR + "/class_A",
         root_b=config.TRAIN_DIR + "/class_B",
-        transform=config.transforms
+        transform=config.train_transforms
     )
 
     data_loader = DataLoader(
