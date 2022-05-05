@@ -1,13 +1,20 @@
 /.idea/*
 /__pycache__/*
+
+# Не загружать датасет
 /dataset/train/class_A/*
 /dataset/train/class_B/*
+
+# Не загружать сохраненные чекпоинты
+/checkpoints/*.pth.tar
 /checkpoints/disc_a.pth.tar
 /checkpoints/disc_b.pth.tar
 /checkpoints/gen_a.pth.tar
 /checkpoints/gen_b.pth.tar
+
+# Не загружать сохраненные изображения (кроме киперов)
 /saved_images/*.png
 /saved_images/fake_a/*.png
-!/saved_images/fake_a/.gitkeep
 /saved_images/fake_b/*.png
+!/saved_images/fake_a/.gitkeep
 !/saved_images/fake_b/.gitkeep
