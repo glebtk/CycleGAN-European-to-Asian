@@ -7,7 +7,7 @@
 /checkpoints/gen_a.pth.tar
 /checkpoints/gen_b.pth.tar
 /saved_images/*.png
-/saved_images/fake_a/
+/saved_images/fake_a/*.png
 !/saved_images/fake_a/.gitkeep
-/saved_images/fake_b/
+/saved_images/fake_b/*.png
 !/saved_images/fake_b/.gitkeep
