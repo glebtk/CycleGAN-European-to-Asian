@@ -15,14 +15,17 @@ NUM_WORKERS = 2
 NUM_EPOCHS = 100
 LOAD_MODEL = False
 SAVE_MODEL = True
-TEST_EVERY_EPOCH = True
+TEST_EVERY_EPOCH = False
 CHECKPOINT_GEN_A = "gen_a.pth.tar"
 CHECKPOINT_GEN_B = "gen_b.pth.tar"
 CHECKPOINT_DISC_A = "disc_a.pth.tar"
 CHECKPOINT_DISC_B = "disc_b.pth.tar"
 
-DATASET_MEAN = torch.tensor([0.5298, 0.4365, 0.3811])
-DATASET_STD = torch.tensor([0.2104, 0.1828, 0.1795])
+DATASET_MEAN = 0.4491
+DATASET_STD = 0.1909
+
+# DATASET_MEAN = torch.tensor([0.5298, 0.4365, 0.3811])
+# DATASET_STD = torch.tensor([0.2104, 0.1828, 0.1795])
 
 # For training:
 train_transforms = A.Compose(
@@ -43,7 +46,7 @@ train_transforms = A.Compose(
 test_transforms = A.Compose(
     [
         A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE),
-        A.Normalize(mean=DATASET_MEAN, std=DATASET_MEAN, max_pixel_value=255),
+        A.Normalize(mean=DATASET_MEAN, std=DATASET_STD, max_pixel_value=255),
         # A.Normalize(mean=[0.5298, 0.4365, 0.3811], std=[0.2104, 0.1828, 0.1795], max_pixel_value=255),
         ToTensorV2(),
      ],
