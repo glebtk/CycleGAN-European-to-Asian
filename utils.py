@@ -1,5 +1,8 @@
+import os
 import torch
 import config
+
+from datetime import datetime
 
 
 def save_checkpoint(model, optimizer, filename):
@@ -19,3 +22,14 @@ def load_checkpoint(model, optimizer, lr, checkpoint_file):
 
     for param_group in optimizer.param_groups:
         param_group["lr"] = lr
+
+
+def make_directory(folder_path):
+    try:
+        os.makedirs(folder_path)
+    except FileExistsError:
+        print("Ошибка: директория ", folder_path, " уже существует")
+
+
+def get_current_time():
+    return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
