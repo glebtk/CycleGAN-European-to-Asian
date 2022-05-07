@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 def save_checkpoint(model, optimizer, filename):
-    print("=> Saving " + filename)
+    print("=> Сохраняется " + filename)
     checkpoint = {
         "state_dict": model.state_dict(),
         "optimizer": optimizer.state_dict(),
@@ -15,13 +15,29 @@ def save_checkpoint(model, optimizer, filename):
 
 
 def load_checkpoint(model, optimizer, lr, checkpoint_file):
-    print("=> Loading " + checkpoint_file)
-    checkpoint = torch.load(checkpoint_file, map_location=config.DEVICE)
-    model.load_state_dict(checkpoint["state_dict"])
-    optimizer.load_state_dict(checkpoint["optimizer"])
+    try:
+        print("=> Загружается " + checkpoint_file)
+        checkpoint = torch.load(checkpoint_file, map_location=config.DEVICE)
+        model.load_state_dict(checkpoint["state_dict"])
+        optimizer.load_state_dict(checkpoint["optimizer"])
+    except FileNotFoundError:
+        print(f"Ошибка: не удалось найти {checkpoint_file}")
+        return
 
     for param_group in optimizer.param_groups:
         param_group["lr"] = lr
+
+
+def get_last_checkpoint(model_name):
+    try:
+        checkpoints = os.listdir(config.CHECKPOINT_DIR)
+        checkpoints = [d for d in checkpoints if os.path.isdir(os.path.join(config.CHECKPOINT_DIR, d))]
+
+        last_checkpoint = os.path.join(config.CHECKPOINT_DIR, checkpoints[-1])
+
+        return os.path.join(last_checkpoint, model_name)
+    except FileNotFoundError:
+        print(f'Ошибка: не удалось загрузить {last_checkpoint}')
 
 
 def make_directory(folder_path):
