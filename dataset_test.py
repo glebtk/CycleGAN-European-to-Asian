@@ -25,7 +25,7 @@ def test(img_dir="dataset/train/class_A", save_dir="saved_images/", name="test.p
         result = torchvision.utils.make_grid(images, nrow=len(images))
 
         # Сохраняем
-        torchvision.utils.save_image(result, save_dir + f"{i}_" + name)
+        torchvision.utils.save_image(result*config.DATASET_STD+config.DATASET_MEAN, save_dir + f"{i}_" + name)
         print("Successfully saved!")
 
 
