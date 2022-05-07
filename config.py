@@ -2,20 +2,30 @@ import torch
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
+# Предустановки
 IMAGE_SIZE = 256
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-TRAIN_DIR = "dataset/train"
-VAL_DIR = "dataset/val"
-BATCH_SIZE = 1
 IN_CHANNELS = 3
+
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+NUM_WORKERS = 2
+
+# Обучение
+NUM_EPOCHS = 5
+BATCH_SIZE = 1
 LEARNING_RATE = 3e-5
+
 LAMBDA_IDENTITY = 0.0
 LAMBDA_CYCLE = 10
-NUM_WORKERS = 2
-NUM_EPOCHS = 100
-LOAD_MODEL = False
+
+LOAD_MODEL = True
 SAVE_MODEL = True
 TEST_EVERY_EPOCH = False
+
+# Датасет
+TRAIN_DIR = "dataset/train"
+VAL_DIR = "dataset/val"
+CHECKPOINT_DIR = "checkpoints"
+
 CHECKPOINT_GEN_A = "gen_a.pth.tar"
 CHECKPOINT_GEN_B = "gen_b.pth.tar"
 CHECKPOINT_DISC_A = "disc_a.pth.tar"
@@ -32,10 +42,10 @@ train_transforms = A.Compose(
     [
         A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE),
         A.HorizontalFlip(p=0.5),
-        A.Rotate(p=1.0, limit=(-5, 5)),
-        A.ElasticTransform(p=1.0, alpha=1.0, sigma=50.0, alpha_affine=5.0),
-        A.ISONoise(p=1.0, intensity=(0.1, 0.5), color_shift=(0.01, 0.05)),
-        A.RandomContrast(p=1.0, limit=(-0.1, 0.1)),
+        A.Rotate(p=1.0, limit=10),
+        A.ElasticTransform(p=0.8, alpha=1.0, sigma=50.0, alpha_affine=5.0),
+        A.ISONoise(p=0.3, intensity=(0.1, 0.5), color_shift=(0.01, 0.05)),
+        A.RandomBrightnessContrast(p=1.0, brightness_limit=0.2, contrast_limit=0.2),
         A.Normalize(mean=DATASET_MEAN, std=DATASET_STD, max_pixel_value=255),
         ToTensorV2(),
      ],
