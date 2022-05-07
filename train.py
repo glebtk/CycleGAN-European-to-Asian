@@ -1,16 +1,20 @@
+import os
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
 from tqdm import tqdm
+from datetime import datetime
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image
 from discriminator import Discriminator
 from generator import Generator
 from dataset import ABDataset
+from utils import *
 from test import test
 
-import utils
+
 import config
 
 import time
@@ -70,7 +74,7 @@ def train(gen_A, gen_B, disc_A, disc_B, data_loader, opt_gen, opt_disc, L1, MSE,
         gen_A_cycle_loss = L1(a_image, cycle_fake_A)
         gen_B_cycle_loss = L1(b_image, cycle_fake_B)
 
-        # Собираем все наши ошибки
+        # Объединяем loss
         G_loss = (
                 gen_A_adversarial_loss
                 + gen_B_adversarial_loss
@@ -78,6 +82,7 @@ def train(gen_A, gen_B, disc_A, disc_B, data_loader, opt_gen, opt_disc, L1, MSE,
                 + gen_B_cycle_loss * config.LAMBDA_CYCLE
         )
 
+        # Обновляем веса генераторов
         opt_gen.zero_grad()
         g_scaler.scale(G_loss).backward()
         g_scaler.step(opt_gen)
@@ -111,10 +116,21 @@ def main():
     MSE = nn.MSELoss()
 
     if config.LOAD_MODEL:
-        utils.load_checkpoint(gen_A, opt_gen, config.LEARNING_RATE, "checkpoints/" + config.CHECKPOINT_GEN_A)
-        utils.load_checkpoint(gen_B, opt_gen, config.LEARNING_RATE, "checkpoints/" + config.CHECKPOINT_GEN_B)
-        utils.load_checkpoint(disc_A, opt_disc, config.LEARNING_RATE, "checkpoints/" + config.CHECKPOINT_DISC_A)
-        utils.load_checkpoint(disc_B, opt_disc, config.LEARNING_RATE, "checkpoints/" + config.CHECKPOINT_DISC_B)
+        # Получаем путь к последнему чекпоинту
+        checkpoints = os.listdir(config.CHECKPOINT_DIR)
+        checkpoints = [d for d in checkpoints if os.path.isdir(os.path.join(config.CHECKPOINT_DIR, d))]
+        checkpoints.sort()
+
+        last_checkpoint = os.path.join(config.CHECKPOINT_DIR, checkpoints[-1])
+
+        # Загружаем последний чекпоинт
+        try:
+            load_checkpoint(gen_A, opt_gen, config.LEARNING_RATE, os.path.join(last_checkpoint, config.CHECKPOINT_GEN_A))
+            load_checkpoint(gen_B, opt_gen, config.LEARNING_RATE, os.path.join(last_checkpoint, config.CHECKPOINT_GEN_B))
+            load_checkpoint(disc_A, opt_disc, config.LEARNING_RATE, os.path.join(last_checkpoint, config.CHECKPOINT_DISC_A))
+            load_checkpoint(disc_B, opt_disc, config.LEARNING_RATE, os.path.join(last_checkpoint, config.CHECKPOINT_DISC_B))
+        except FileNotFoundError:
+            print("Ошибка: не удалось загрузить сохраненные модели")
 
     dataset = ABDataset(
         root_a=config.TRAIN_DIR + "/class_A",
@@ -137,13 +153,18 @@ def main():
         train(gen_A, gen_B, disc_A, disc_B, data_loader, opt_gen, opt_disc, L1, MSE, d_scaler, g_scaler)
 
         if config.SAVE_MODEL:
-            utils.save_checkpoint(gen_A, opt_gen, "checkpoints/" + config.CHECKPOINT_GEN_A)
-            utils.save_checkpoint(gen_B, opt_gen, "checkpoints/" + config.CHECKPOINT_GEN_B)
-            utils.save_checkpoint(disc_A, opt_disc, "checkpoints/" + config.CHECKPOINT_DISC_A)
-            utils.save_checkpoint(disc_B, opt_disc, "checkpoints/" + config.CHECKPOINT_DISC_B)
+            # Создаем директорию для сохранения
+            directory = os.path.join(config.CHECKPOINT_DIR, get_current_time())
+            make_directory(directory)
 
-        if config.TEST_EVERY_EPOCH:
-            test(img_dir="test_images/", save_dir="saved_images/", name=f"test_{epoch}_epoch.png")
+            # Сохраняем модели
+            save_checkpoint(gen_A, opt_gen, os.path.join(directory, config.CHECKPOINT_GEN_A))
+            save_checkpoint(gen_B, opt_gen, os.path.join(directory, config.CHECKPOINT_GEN_B))
+            save_checkpoint(disc_A, opt_disc, os.path.join(directory, config.CHECKPOINT_DISC_A))
+            save_checkpoint(disc_B, opt_disc, os.path.join(directory, config.CHECKPOINT_DISC_B))
+
+        # if config.TEST_EVERY_EPOCH:
+        #     test(img_dir="test_images/", save_dir="saved_images/", name=f"test_{epoch}_epoch.png")
 
 
 if __name__ == "__main__":
