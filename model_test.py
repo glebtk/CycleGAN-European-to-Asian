@@ -1,14 +1,14 @@
 import os
-
-import numpy as np
 import torch
-import torch.optim as optim
 import torchvision
+import torch.optim as optim
+import numpy as np
+
 from PIL import Image
+from generator import Generator
 
 import config
 import utils
-from generator import Generator
 
 
 def test(img_dir="test_images/", save_dir="saved_images/", name="test.png"):
