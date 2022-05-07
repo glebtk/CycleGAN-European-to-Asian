@@ -6,11 +6,7 @@
 /dataset/train/class_B/*
 
 # Не загружать сохраненные чекпоинты
-/checkpoints/*.pth.tar
-/checkpoints/disc_a.pth.tar
-/checkpoints/disc_b.pth.tar
-/checkpoints/gen_a.pth.tar
-/checkpoints/gen_b.pth.tar
+/checkpoints/**
 
 # Не загружать сохраненные изображения (кроме киперов)
 /saved_images/*.png

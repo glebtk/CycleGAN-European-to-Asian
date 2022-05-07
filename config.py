@@ -61,5 +61,3 @@ test_transforms = A.Compose(
         ToTensorV2(),
      ],
 )
-
-
