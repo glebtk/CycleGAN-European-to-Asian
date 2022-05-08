@@ -12,7 +12,7 @@ from discriminator import Discriminator
 from generator import Generator
 from dataset import ABDataset
 from utils import *
-from test import test
+from model_test import test
 
 
 import config
@@ -89,8 +89,8 @@ def train(gen_A, gen_B, disc_A, disc_B, data_loader, opt_gen, opt_disc, L1, MSE,
         g_scaler.update()
 
         if idx % 50 == 0:
-            save_image(fake_a_image * config.DATASET_STD + config.DATASET_MEAN, f"saved_images/fake_a/fake_a_{int(time.time())}.png")
-            save_image(fake_b_image * config.DATASET_STD + config.DATASET_MEAN, f"saved_images/fake_b/fake_b_{int(time.time())}.png")
+            save_image(fake_a_image * config.DATASET_STD + config.DATASET_MEAN, f"saved_images/fake_a/pic_{get_current_time()}.png")
+            save_image(fake_b_image * config.DATASET_STD + config.DATASET_MEAN, f"saved_images/fake_b/pic_{get_current_time()}.png")
 
 
 def main():
@@ -116,21 +116,11 @@ def main():
     MSE = nn.MSELoss()
 
     if config.LOAD_MODEL:
-        # Получаем путь к последнему чекпоинту
-        checkpoints = os.listdir(config.CHECKPOINT_DIR)
-        checkpoints = [d for d in checkpoints if os.path.isdir(os.path.join(config.CHECKPOINT_DIR, d))]
-        checkpoints.sort()
-
-        last_checkpoint = os.path.join(config.CHECKPOINT_DIR, checkpoints[-1])
-
         # Загружаем последний чекпоинт
-        try:
-            load_checkpoint(gen_A, opt_gen, config.LEARNING_RATE, os.path.join(last_checkpoint, config.CHECKPOINT_GEN_A))
-            load_checkpoint(gen_B, opt_gen, config.LEARNING_RATE, os.path.join(last_checkpoint, config.CHECKPOINT_GEN_B))
-            load_checkpoint(disc_A, opt_disc, config.LEARNING_RATE, os.path.join(last_checkpoint, config.CHECKPOINT_DISC_A))
-            load_checkpoint(disc_B, opt_disc, config.LEARNING_RATE, os.path.join(last_checkpoint, config.CHECKPOINT_DISC_B))
-        except FileNotFoundError:
-            print("Ошибка: не удалось загрузить сохраненные модели")
+        load_checkpoint(gen_A, opt_gen, config.LEARNING_RATE, get_last_checkpoint(config.CHECKPOINT_GEN_A))
+        load_checkpoint(gen_B, opt_gen, config.LEARNING_RATE, get_last_checkpoint(config.CHECKPOINT_GEN_B))
+        load_checkpoint(disc_A, opt_disc, config.LEARNING_RATE, get_last_checkpoint(config.CHECKPOINT_DISC_A))
+        load_checkpoint(disc_B, opt_disc, config.LEARNING_RATE, get_last_checkpoint(config.CHECKPOINT_DISC_B))
 
     dataset = ABDataset(
         root_a=config.TRAIN_DIR + "/class_A",
