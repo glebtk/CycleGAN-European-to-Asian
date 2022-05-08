@@ -1,3 +1,5 @@
+from statistics import mean
+
 import numpy as np
 import torch
 import albumentations as A
@@ -18,7 +20,7 @@ LEARNING_RATE = 3e-5
 LAMBDA_IDENTITY = 0.0
 LAMBDA_CYCLE = 10
 
-LOAD_MODEL = True
+LOAD_MODEL = False
 SAVE_MODEL = True
 TEST_EVERY_EPOCH = False
 
@@ -32,8 +34,10 @@ CHECKPOINT_GEN_B = "gen_b.pth.tar"
 CHECKPOINT_DISC_A = "disc_a.pth.tar"
 CHECKPOINT_DISC_B = "disc_b.pth.tar"
 
-DATASET_MEAN = np.mean([0.5298, 0.4365, 0.3811])
-DATASET_STD = np.mean([0.2104, 0.1828, 0.1795])
+# DATASET_MEAN = 0.5
+# DATASET_STD = 0.5
+DATASET_MEAN = mean([0.5298, 0.4365, 0.3811])
+DATASET_STD = mean([0.2104, 0.1828, 0.1795])
 
 
 # For training:
