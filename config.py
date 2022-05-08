@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -31,11 +32,9 @@ CHECKPOINT_GEN_B = "gen_b.pth.tar"
 CHECKPOINT_DISC_A = "disc_a.pth.tar"
 CHECKPOINT_DISC_B = "disc_b.pth.tar"
 
-DATASET_MEAN = 0.4491
-DATASET_STD = 0.1909
+DATASET_MEAN = np.mean([0.5298, 0.4365, 0.3811])
+DATASET_STD = np.mean([0.2104, 0.1828, 0.1795])
 
-# DATASET_MEAN = torch.tensor([0.5298, 0.4365, 0.3811])
-# DATASET_STD = torch.tensor([0.2104, 0.1828, 0.1795])
 
 # For training:
 train_transforms = A.Compose(
@@ -43,8 +42,7 @@ train_transforms = A.Compose(
         A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE),
         A.HorizontalFlip(p=0.5),
         A.Rotate(p=1.0, limit=10),
-        # A.ElasticTransform(p=0.8, alpha=1.0, sigma=50.0, alpha_affine=5.0),
-        A.ISONoise(p=0.3, intensity=(0.1, 0.5), color_shift=(0.01, 0.05)),
+        A.ISONoise(p=0.15, intensity=(0.1, 0.5), color_shift=(0.01, 0.05)),
         A.RandomBrightnessContrast(p=1.0, brightness_limit=0.2, contrast_limit=0.2),
         A.Normalize(mean=DATASET_MEAN, std=DATASET_STD, max_pixel_value=255),
         ToTensorV2(),
@@ -57,7 +55,6 @@ test_transforms = A.Compose(
     [
         A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE),
         A.Normalize(mean=DATASET_MEAN, std=DATASET_STD, max_pixel_value=255),
-        # A.Normalize(mean=[0.5298, 0.4365, 0.3811], std=[0.2104, 0.1828, 0.1795], max_pixel_value=255),
         ToTensorV2(),
      ],
 )
