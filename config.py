@@ -10,7 +10,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 NUM_WORKERS = 2
 
 # Обучение
-NUM_EPOCHS = 5
+NUM_EPOCHS = 100
 BATCH_SIZE = 1
 LEARNING_RATE = 3e-5
 
@@ -43,7 +43,7 @@ train_transforms = A.Compose(
         A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE),
         A.HorizontalFlip(p=0.5),
         A.Rotate(p=1.0, limit=10),
-        A.ElasticTransform(p=0.8, alpha=1.0, sigma=50.0, alpha_affine=5.0),
+        # A.ElasticTransform(p=0.8, alpha=1.0, sigma=50.0, alpha_affine=5.0),
         A.ISONoise(p=0.3, intensity=(0.1, 0.5), color_shift=(0.01, 0.05)),
         A.RandomBrightnessContrast(p=1.0, brightness_limit=0.2, contrast_limit=0.2),
         A.Normalize(mean=DATASET_MEAN, std=DATASET_STD, max_pixel_value=255),
