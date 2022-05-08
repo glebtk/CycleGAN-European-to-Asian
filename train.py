@@ -103,13 +103,13 @@ def main():
     opt_gen = optim.Adam(
         params=list(gen_A.parameters()) + list(gen_B.parameters()),
         lr=config.LEARNING_RATE,
-        betas=(0.5, 0.999),
+        betas=(0.9, 0.999),
     )
 
     opt_disc = optim.Adam(
         params=list(disc_A.parameters()) + list(disc_B.parameters()),
         lr=config.LEARNING_RATE,
-        betas=(0.5, 0.999),
+        betas=(0.9, 0.999),
     )
 
     L1 = nn.L1Loss()
