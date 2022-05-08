@@ -52,12 +52,12 @@ def train(gen_A, gen_B, disc_A, disc_B, data_loader, opt_gen, opt_disc, L1, MSE,
         fake_loss = MSE(fake_disc_prediction, torch.zeros_like(fake_disc_prediction))
         disc_B_loss = real_loss + fake_loss
 
-        # Объединяем loss
-        disc_loss = (disc_A_loss + disc_B_loss) / 2
+        # Объединяем loss дискриминаторов
+        D_loss = (disc_A_loss + disc_B_loss) / 2
 
         # Обновляем веса дискриминаторов
         opt_disc.zero_grad()
-        d_scaler.scale(disc_loss).backward()
+        d_scaler.scale(D_loss).backward()
         d_scaler.step(opt_disc)
         d_scaler.update()
 
