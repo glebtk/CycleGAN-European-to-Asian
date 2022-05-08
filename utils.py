@@ -1,4 +1,6 @@
 import os
+import sys
+
 import torch
 import config
 
@@ -36,8 +38,12 @@ def get_last_checkpoint(model_name):
         last_checkpoint = os.path.join(config.CHECKPOINT_DIR, checkpoints[-1])
 
         return os.path.join(last_checkpoint, model_name)
+    except IndexError:
+        print(f"Ошибка: в директории {config.CHECKPOINT_DIR} нет сохраненных чекпоинтов")
+        sys.exit(1)
     except FileNotFoundError:
-        print(f'Ошибка: не удалось загрузить {last_checkpoint}')
+        print(f'Ошибка: не удалось загрузить {model_name}')
+        sys.exit(1)
 
 
 def make_directory(folder_path):
