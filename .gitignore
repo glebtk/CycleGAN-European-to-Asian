@@ -2,15 +2,15 @@
 /__pycache__/*
 
 # Не загружать датасет
-/dataset/train/class_A/*
-/dataset/train/class_B/*
+/dataset/train/European/*
+/dataset/train/Asian/*
 
 # Не загружать сохраненные чекпоинты
 /checkpoints/**
 
 # Не загружать сохраненные изображения (кроме киперов)
 /saved_images/*.png
-/saved_images/fake_a/*.png
-/saved_images/fake_b/*.png
-!/saved_images/fake_a/.gitkeep
-!/saved_images/fake_b/.gitkeep
+/saved_images/fake_european/*.png
+/saved_images/fake_asian/*.png
+!/saved_images/fake_european/.gitkeep
+!/saved_images/fake_asian/.gitkeep

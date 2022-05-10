@@ -1,67 +1,66 @@
+import config
 import os
 import numpy as np
 
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 
-import config
 
-
-class ABDataset(Dataset):
-    def __init__(self, root_a, root_b, transform=None):
-        self.root_a = root_a
-        self.root_b = root_b
+class EuropeanAsianDataset(Dataset):
+    def __init__(self, root_european, root_asian, transform=None):
+        self.root_european = root_european
+        self.root_asian = root_asian
         self.transform = transform
 
         # Получаем списки имен изображений обоих классов
-        self.a_names_list = os.listdir(root_a)
-        self.b_names_list = os.listdir(root_b)
+        self.european_names_list = os.listdir(root_european)
+        self.asian_names_list = os.listdir(root_asian)
 
         # Находим количество изображений каждого класса
-        self.a_list_len = len(self.a_names_list)
-        self.b_list_len = len(self.b_names_list)
+        self.european_list_len = len(self.european_names_list)
+        self.asian_list_len = len(self.asian_names_list)
 
         # Определяем условную длину датасета
-        self.dataset_length = max(self.a_list_len, self.b_list_len)
+        self.dataset_length = max(self.european_list_len, self.asian_list_len)
 
     def __len__(self):
         return self.dataset_length
 
     def __getitem__(self, index):
-        a_index = index
-        b_index = index
+        european_index = index
+        asian_index = index
 
-        # Если количество изображений A и B разное,
-        if self.a_list_len != self.b_list_len:
-            a_index = self.a_names_list[index % self.dataset_length]
-            b_index = self.b_names_list[index % self.dataset_length]
+        # Если количество изображений разное,
+        if self.european_list_len != self.asian_list_len:
+            european_index = self.european_names_list[index % self.dataset_length]
+            asian_index = self.asian_names_list[index % self.dataset_length]
 
         # Получаем имена изображений
-        a_name = self.a_names_list[a_index]
-        b_name = self.b_names_list[b_index]
+        european_name = self.european_names_list[european_index]
+        asian_name = self.asian_names_list[asian_index]
 
         # Получаем полные пути к изображениям
-        a_path = os.path.join(self.root_a, a_name)
-        b_path = os.path.join(self.root_b, b_name)
+        european_path = os.path.join(self.root_european, european_name)
+        asian_path = os.path.join(self.root_asian, asian_name)
 
         # Получаем изображения и конвертируем в np.array
-        a_image = np.array(Image.open(a_path).convert("RGB"))
-        b_image = np.array(Image.open(b_path).convert("RGB"))
+        european_image = np.array(Image.open(european_path).convert("RGB"))
+        asian_image = np.array(Image.open(asian_path).convert("RGB"))
 
         # Если нужно, применяем аугментации
         if self.transform:
-            augmentations = self.transform(image=a_image, image0=b_image)
+            augmentations = self.transform(image=european_image, image0=asian_image)
 
-            a_image = augmentations["image"]
-            b_image = augmentations["image0"]
+            european_image = augmentations["image"]
+            asian_image = augmentations["image0"]
 
-        return a_image, b_image
+        return european_image, asian_image
 
 
 def test():
-    dataset = ABDataset(
-        root_a=config.TRAIN_DIR + "/class_A",
-        root_b=config.TRAIN_DIR + "/class_B",
+    dataset = EuropeanAsianDataset(
+        root_european=config.TRAIN_DIR + "/European",
+        root_asian=config.TRAIN_DIR + "/Asian",
         transform=config.train_transforms
     )
 

@@ -1,7 +1,9 @@
 import torch
 import albumentations as A
-from albumentations.pytorch import ToTensorV2
+
 from statistics import mean
+from albumentations.pytorch import ToTensorV2
+
 
 # Предустановки
 IMAGE_SIZE = 256
@@ -27,10 +29,10 @@ TRAIN_DIR = "dataset/train"
 VAL_DIR = "dataset/val"
 CHECKPOINT_DIR = "checkpoints"
 
-CHECKPOINT_GEN_A = "gen_a.pth.tar"
-CHECKPOINT_GEN_B = "gen_b.pth.tar"
-CHECKPOINT_DISC_A = "disc_a.pth.tar"
-CHECKPOINT_DISC_B = "disc_b.pth.tar"
+CHECKPOINT_GEN_EUROPEAN = "gen_european.pth.tar"
+CHECKPOINT_GEN_ASIAN = "gen_asian.pth.tar"
+CHECKPOINT_DISC_EUROPEAN = "disc_european.pth.tar"
+CHECKPOINT_DISC_ASIAN = "disc_asian.pth.tar"
 
 # DATASET_MEAN = 0.5
 # DATASET_STD = 0.5
