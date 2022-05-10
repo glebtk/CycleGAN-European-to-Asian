@@ -1,9 +1,7 @@
-from statistics import mean
-
-import numpy as np
 import torch
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
+from statistics import mean
 
 # Предустановки
 IMAGE_SIZE = 256
@@ -61,4 +59,12 @@ test_transforms = A.Compose(
         A.Normalize(mean=DATASET_MEAN, std=DATASET_STD, max_pixel_value=255),
         ToTensorV2(),
      ],
+)
+
+# For mean calculating:
+mean_transforms = A.Compose(
+    [
+        ToTensorV2(),
+     ],
+    additional_targets={"image0": "image"},
 )

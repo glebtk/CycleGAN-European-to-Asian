@@ -33,12 +33,8 @@ class ABDataset(Dataset):
 
         # Если количество изображений A и B разное,
         if self.a_list_len != self.b_list_len:
-            #  определяем индекс по правилу пропорции
-            a_index = int((self.a_list_len * index) / self.dataset_length)
-            b_index = int((self.b_list_len * index) / self.dataset_length)
-
-            # a_index = self.a_names_list[index % self.dataset_length]
-            # b_index = self.b_names_list[index % self.dataset_length]
+            a_index = self.a_names_list[index % self.dataset_length]
+            b_index = self.b_names_list[index % self.dataset_length]
 
         # Получаем имена изображений
         a_name = self.a_names_list[a_index]
