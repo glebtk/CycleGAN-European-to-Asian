@@ -1,7 +1,6 @@
 import torch
 import albumentations as A
 
-from statistics import mean
 from albumentations.pytorch import ToTensorV2
 
 
@@ -15,7 +14,7 @@ NUM_WORKERS = 2
 # Обучение
 NUM_EPOCHS = 100
 BATCH_SIZE = 1
-LEARNING_RATE = 3e-5
+LEARNING_RATE = 3e-4
 
 LAMBDA_IDENTITY = 0.0
 LAMBDA_CYCLE = 10
@@ -34,10 +33,8 @@ CHECKPOINT_GEN_ASIAN = "gen_asian.pth.tar"
 CHECKPOINT_DISC_EUROPEAN = "disc_european.pth.tar"
 CHECKPOINT_DISC_ASIAN = "disc_asian.pth.tar"
 
-# DATASET_MEAN = 0.5
-# DATASET_STD = 0.5
-DATASET_MEAN = mean([0.5298, 0.4365, 0.3811])
-DATASET_STD = mean([0.2104, 0.1828, 0.1795])
+DATASET_MEAN = [0.5298, 0.4365, 0.3811]
+DATASET_STD = [0.2654, 0.2402, 0.2382]
 
 
 # For training:
@@ -48,7 +45,7 @@ train_transforms = A.Compose(
         A.Rotate(p=1.0, limit=10),
         A.ISONoise(p=0.15, intensity=(0.1, 0.5), color_shift=(0.01, 0.05)),
         A.RandomBrightnessContrast(p=1.0, brightness_limit=0.2, contrast_limit=0.2),
-        A.Normalize(mean=DATASET_MEAN, std=DATASET_STD, max_pixel_value=255),
+        A.Normalize(mean=DATASET_MEAN, std=DATASET_STD, max_pixel_value=255.0),
         ToTensorV2(),
      ],
     additional_targets={"image0": "image"},
@@ -61,12 +58,4 @@ test_transforms = A.Compose(
         A.Normalize(mean=DATASET_MEAN, std=DATASET_STD, max_pixel_value=255),
         ToTensorV2(),
      ],
-)
-
-# For mean calculating:
-mean_transforms = A.Compose(
-    [
-        ToTensorV2(),
-     ],
-    additional_targets={"image0": "image"},
 )
