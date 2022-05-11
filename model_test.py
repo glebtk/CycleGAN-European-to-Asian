@@ -1,50 +1,65 @@
-import os
-import torch
-import torchvision
-import torch.optim as optim
 import numpy as np
+import torch.optim as optim
 
 from PIL import Image
 from generator import Generator
+from utils import *
 
-import config
-import utils
+
+def load_generators():
+    gen_E = Generator(in_channels=config.IN_CHANNELS, num_residuals=9).to(config.DEVICE)
+    gen_A = Generator(in_channels=config.IN_CHANNELS, num_residuals=9).to(config.DEVICE)
+
+    optimizer = optim.Adam(
+        params=list(gen_E.parameters()) + list(gen_A.parameters()),
+        lr=config.LEARNING_RATE,
+        betas=(0.5, 0.999),
+    )
+
+    load_checkpoint(gen_E, optimizer, config.LEARNING_RATE, get_last_checkpoint(config.CHECKPOINT_GEN_EUROPEAN))
+    load_checkpoint(gen_A, optimizer, config.LEARNING_RATE, get_last_checkpoint(config.CHECKPOINT_GEN_ASIAN))
+
+    return gen_E, gen_A
 
 
 def test(img_dir="test_images/", save_dir="saved_images/", name="test.png"):
 
     # Загружаем и подготавливаем картинки:
-    images = [img for img in os.listdir(img_dir)]  # Names
+    images = [img for img in os.listdir(img_dir) if img.endswith(".png") or img.endswith(".jpg")]  # Names
     images = [Image.open(img_dir + img).convert("RGB") for img in images]  # Names -> PIL Images
     images = [np.array(img) for img in images]  # PIL Images -> np.arrays
-    images = [config.test_transforms(image=img)["image"] for img in images]  # Transforms
-    images = torch.stack(images)  # List of tensors -> Tensor
-    images = images.to(config.DEVICE)
+    images = [config.test_transforms(image=img)["image"] for img in images]  # np.arrays -> torch.tensors
+    images = [img.to(config.DEVICE) for img in images]
+
     # Загружаем модели генераторов:
-    gen_B = Generator(in_channels=config.IN_CHANNELS, num_residuals=9).to(config.DEVICE)
-    gen_A = Generator(in_channels=config.IN_CHANNELS, num_residuals=9).to(config.DEVICE)
+    gen_E, gen_A = load_generators()
 
-    optimizer = optim.Adam(
-        params=list(gen_A.parameters()) + list(gen_B.parameters()),
-        lr=config.LEARNING_RATE,
-        betas=(0.5, 0.999),
-    )
+    # Генерируем изображения:
+    pred_E = [gen_E(img).detach().numpy() for img in images]
+    pred_A = [gen_A(img).detach().numpy() for img in images]
 
-    utils.load_checkpoint(gen_B, optimizer, config.LEARNING_RATE, "checkpoints/" + config.CHECKPOINT_GEN_B)
-    utils.load_checkpoint(gen_A, optimizer, config.LEARNING_RATE, "checkpoints/" + config.CHECKPOINT_GEN_A)
+    # Собираем всё вместе и сохраняем:
+    images = np.array([img.detach().numpy() for img in images])
+    pred_E = np.array(pred_E)
+    pred_A = np.array(pred_A)
 
-    # Генерируем картинки
-    pred_B = gen_B(images)
-    pred_A = gen_A(images)
+    images = np.concatenate(images[:], axis=1)
+    pred_E = np.concatenate(pred_E[:], axis=1)
+    pred_A = np.concatenate(pred_A[:], axis=1)
 
-    # Собираем результат в одну картинку
-    result = torch.cat((images, pred_B, pred_A), dim=0)
-    result = torchvision.utils.make_grid(result, nrow=len(images))
+    result = np.concatenate((images, pred_E, pred_A), axis=2)
 
-    # Сохраняем
-    result = result * config.DATASET_STD + config.DATASET_MEAN
-    torchvision.utils.save_image(result, save_dir + name)
-    print("Successfully saved!")
+    result = (result * config.DATASET_STD + config.DATASET_MEAN) * 255
+    result = np.array(result, dtype=np.uint8)
+
+    result = np.moveaxis(result, 0, -1)
+
+    result = Image.fromarray(result)
+
+    path = os.path.join(save_dir, name)
+    result.save(path)
+
+    print(f"Изображение {path} успешно сохранено!")
 
 
 if __name__ == "__main__":
