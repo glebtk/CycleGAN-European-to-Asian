@@ -1,3 +1,6 @@
+import numpy as np
+import torch
+
 import config
 import torch.nn as nn
 import torch.optim as optim
@@ -80,8 +83,10 @@ def train(gen_European, gen_Asian, disc_European, disc_Asian, data_loader, opt_g
         g_scaler.update()
 
         if idx % 50 == 0:
-            save_image(fake_european_image * config.DATASET_STD + config.DATASET_MEAN, f"saved_images/fake_european/pic_{get_current_time()}.png")
-            save_image(fake_asian_image * config.DATASET_STD + config.DATASET_MEAN, f"saved_images/fake_asian/pic_{get_current_time()}.png")
+            fake_european_to_save = fake_european_image * config.DATASET_STD + config.DATASET_MEAN
+            fake_asian_to_save = fake_asian_image * config.DATASET_STD + config.DATASET_MEAN
+            save_image(fake_european_to_save, f"saved_images/fake_european/pic_{get_current_time()}.png")
+            save_image(fake_asian_to_save, f"saved_images/fake_asian/pic_{get_current_time()}.png")
 
 
 def main():
@@ -143,9 +148,6 @@ def main():
             save_checkpoint(gen_Asian, opt_gen, os.path.join(directory, config.CHECKPOINT_GEN_ASIAN))
             save_checkpoint(disc_European, opt_disc, os.path.join(directory, config.CHECKPOINT_DISC_EUROPEAN))
             save_checkpoint(disc_Asian, opt_disc, os.path.join(directory, config.CHECKPOINT_DISC_ASIAN))
-
-        # if config.TEST_EVERY_EPOCH:
-        #     test(img_dir="test_images/", save_dir="saved_images/", name=f"test_{epoch}_epoch.png")
 
 
 if __name__ == "__main__":
