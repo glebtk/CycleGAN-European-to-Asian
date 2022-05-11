@@ -16,12 +16,10 @@ NUM_EPOCHS = 100
 BATCH_SIZE = 1
 LEARNING_RATE = 3e-4
 
-LAMBDA_IDENTITY = 0.0
 LAMBDA_CYCLE = 10
 
 LOAD_MODEL = False
 SAVE_MODEL = True
-TEST_EVERY_EPOCH = False
 
 # Датасет
 TRAIN_DIR = "dataset/train"
@@ -33,9 +31,8 @@ CHECKPOINT_GEN_ASIAN = "gen_asian.pth.tar"
 CHECKPOINT_DISC_EUROPEAN = "disc_european.pth.tar"
 CHECKPOINT_DISC_ASIAN = "disc_asian.pth.tar"
 
-DATASET_MEAN = [0.5298, 0.4365, 0.3811]
-DATASET_STD = [0.2654, 0.2402, 0.2382]
-
+DATASET_MEAN = sum([0.5298, 0.4365, 0.3811]) / 3
+DATASET_STD = sum([0.2654, 0.2402, 0.2382]) / 3
 
 # For training:
 train_transforms = A.Compose(
