@@ -47,12 +47,11 @@ class EuropeanAsianDataset(Dataset):
         european_image = np.array(Image.open(european_path).convert("RGB"))
         asian_image = np.array(Image.open(asian_path).convert("RGB"))
 
-        # Если нужно, применяем аугментации
-        if self.transform:
-            augmentations = self.transform(image=european_image, image0=asian_image)
+        # Применяем аугментации
+        augmentations = self.transform(image=european_image, image0=asian_image)
 
-            european_image = augmentations["image"]
-            asian_image = augmentations["image0"]
+        european_image = augmentations["image"]
+        asian_image = augmentations["image0"]
 
         return european_image, asian_image
 
