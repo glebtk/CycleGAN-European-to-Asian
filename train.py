@@ -1,7 +1,5 @@
-import numpy as np
-import torch
-
 import config
+import model_test
 import torch.nn as nn
 import torch.optim as optim
 
@@ -99,13 +97,13 @@ def main():
     opt_gen = optim.Adam(
         params=list(gen_European.parameters()) + list(gen_Asian.parameters()),
         lr=config.LEARNING_RATE,
-        betas=(0.9, 0.999),
+        betas=(0.5, 0.999),
     )
 
     opt_disc = optim.Adam(
         params=list(disc_European.parameters()) + list(disc_Asian.parameters()),
         lr=config.LEARNING_RATE,
-        betas=(0.9, 0.999),
+        betas=(0.5, 0.999),
     )
 
     L1 = nn.L1Loss()
@@ -148,6 +146,10 @@ def main():
             save_checkpoint(gen_Asian, opt_gen, os.path.join(directory, config.CHECKPOINT_GEN_ASIAN))
             save_checkpoint(disc_European, opt_disc, os.path.join(directory, config.CHECKPOINT_DISC_EUROPEAN))
             save_checkpoint(disc_Asian, opt_disc, os.path.join(directory, config.CHECKPOINT_DISC_ASIAN))
+
+            # Если нужно, тестируем
+            if config.TEST_EVERY_SAVE:
+                model_test.test(save_dir=directory, name=f"{epoch+1}_epoch_test.png")
 
 
 if __name__ == "__main__":

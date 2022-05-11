@@ -18,8 +18,9 @@ LEARNING_RATE = 3e-4
 
 LAMBDA_CYCLE = 10
 
-LOAD_MODEL = False
+LOAD_MODEL = True
 SAVE_MODEL = True
+TEST_EVERY_SAVE = True
 
 # Датасет
 TRAIN_DIR = "dataset/train"
