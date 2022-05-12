@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import torch.optim as optim
 
@@ -22,13 +24,13 @@ def load_generators():
     return gen_E, gen_A
 
 
-def test(img_dir="test_images/", save_dir="saved_images/", name="test.png"):
+def test(img_dir="test_images", save_dir="saved_images", name="test.png"):
 
     # Загружаем и подготавливаем картинки:
     images = [img for img in os.listdir(img_dir) if img.endswith(".png") or img.endswith(".jpg")]  # Names
-    images = [Image.open(img_dir + img).convert("RGB") for img in images]  # Names -> PIL Images
+    images = [Image.open(os.path.join(img_dir, img)).convert("RGB") for img in images]  # Names -> PIL Images
     images = [np.array(img) for img in images]  # PIL Images -> np.arrays
-    images = [config.test_transforms(image=img)["image"] for img in images]  # np.arrays -> torch.tensors
+    images = [config.test_transforms(image=img)["image"] for img in images]  # Transforms
     images = [img.to(config.DEVICE) for img in images]
 
     # Загружаем модели генераторов:
@@ -38,24 +40,22 @@ def test(img_dir="test_images/", save_dir="saved_images/", name="test.png"):
     pred_E = [gen_E(img).detach().numpy() for img in images]
     pred_A = [gen_A(img).detach().numpy() for img in images]
 
-    # Собираем всё вместе и сохраняем:
-    images = np.array([img.detach().numpy() for img in images])
-    pred_E = np.array(pred_E)
-    pred_A = np.array(pred_A)
+    images = [img.detach().numpy() for img in images]
 
-    images = np.concatenate(images[:], axis=1)
-    pred_E = np.concatenate(pred_E[:], axis=1)
-    pred_A = np.concatenate(pred_A[:], axis=1)
+    # Собираем всё вместе и сохраняем:
+    images = np.concatenate(images, axis=1)
+    pred_E = np.concatenate(pred_E, axis=1)
+    pred_A = np.concatenate(pred_A, axis=1)
 
     result = np.concatenate((images, pred_E, pred_A), axis=2)
 
-    result = (result * config.DATASET_STD + config.DATASET_MEAN) * 255
-    result = np.array(result, dtype=np.uint8)
+    result = np.moveaxis(result, 0, -1)  # Меняем порядок осей на такой, как в PIL Image.   (C, H, W) -> (H, W, C)
 
-    result = np.moveaxis(result, 0, -1)
+    result = (result * config.DATASET_STD + config.DATASET_MEAN) * 255  # Производим денормализацию изображений
+
+    result = np.array(result, dtype=np.uint8)  # Меняем тип данных
 
     result = Image.fromarray(result)
-
     path = os.path.join(save_dir, name)
     result.save(path)
 
@@ -63,4 +63,4 @@ def test(img_dir="test_images/", save_dir="saved_images/", name="test.png"):
 
 
 if __name__ == "__main__":
-    test(img_dir="test_images/", save_dir="saved_images/")
+    test(img_dir="test_images", save_dir="saved_images")
