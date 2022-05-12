@@ -1,7 +1,10 @@
 import os
 import sys
 
+import numpy as np
 import torch
+from PIL import Image
+
 import config
 
 from datetime import datetime
@@ -55,3 +58,12 @@ def make_directory(folder_path):
 
 def get_current_time():
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+
+def tensor_to_array(tensor):
+    tensor = tensor.cpu().detach().numpy()
+    tensor = np.moveaxis(tensor, 0, -1)  # Меняем порядок осей на такой, как в PIL Image.   (C, H, W) -> (H, W, C)
+    tensor = (tensor * config.DATASET_STD + config.DATASET_MEAN) * 255  # Производим денормализацию изображения
+    tensor = np.array(tensor, dtype=np.uint8)  # Меняем тип данных
+    return tensor
+

@@ -37,23 +37,17 @@ def test(img_dir="test_images", save_dir="saved_images", name="test.png"):
     gen_E, gen_A = load_generators()
 
     # Генерируем изображения:
-    pred_E = [gen_E(img).detach().numpy() for img in images]
-    pred_A = [gen_A(img).detach().numpy() for img in images]
+    pred_E = [tensor_to_array(gen_E(img)) for img in images]
+    pred_A = [tensor_to_array(gen_A(img)) for img in images]
 
-    images = [img.detach().numpy() for img in images]
+    images = [tensor_to_array(img) for img in images]
 
     # Собираем всё вместе и сохраняем:
-    images = np.concatenate(images, axis=1)
-    pred_E = np.concatenate(pred_E, axis=1)
-    pred_A = np.concatenate(pred_A, axis=1)
+    images = np.concatenate(images)
+    pred_E = np.concatenate(pred_E)
+    pred_A = np.concatenate(pred_A)
 
-    result = np.concatenate((images, pred_E, pred_A), axis=2)
-
-    result = np.moveaxis(result, 0, -1)  # Меняем порядок осей на такой, как в PIL Image.   (C, H, W) -> (H, W, C)
-
-    result = (result * config.DATASET_STD + config.DATASET_MEAN) * 255  # Производим денормализацию изображений
-
-    result = np.array(result, dtype=np.uint8)  # Меняем тип данных
+    result = np.concatenate((images, pred_E, pred_A), axis=1)
 
     result = Image.fromarray(result)
     path = os.path.join(save_dir, name)

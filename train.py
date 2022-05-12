@@ -81,10 +81,10 @@ def train(gen_European, gen_Asian, disc_European, disc_Asian, data_loader, opt_g
         g_scaler.update()
 
         if idx % 50 == 0:
-            fake_european_to_save = fake_european_image * config.DATASET_STD + config.DATASET_MEAN
-            fake_asian_to_save = fake_asian_image * config.DATASET_STD + config.DATASET_MEAN
-            save_image(fake_european_to_save, f"saved_images/fake_european/pic_{get_current_time()}.png")
-            save_image(fake_asian_to_save, f"saved_images/fake_asian/pic_{get_current_time()}.png")
+            fake_E = Image.fromarray(tensor_to_array(fake_european_image))
+            fake_A = Image.fromarray(tensor_to_array(fake_asian_image))
+            fake_E.save(f"saved_images/fake_european/pic_{get_current_time()}.png")
+            fake_A.save(f"saved_images/fake_asian/pic_{get_current_time()}.png")
 
 
 def main():
