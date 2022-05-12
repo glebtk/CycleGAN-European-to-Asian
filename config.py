@@ -33,10 +33,8 @@ CHECKPOINT_GEN_ASIAN = "gen_asian.pth.tar"
 CHECKPOINT_DISC_EUROPEAN = "disc_european.pth.tar"
 CHECKPOINT_DISC_ASIAN = "disc_asian.pth.tar"
 
-DATASET_MEAN = sum([0.5298, 0.4365, 0.3811]) / 3
-DATASET_STD = sum([0.2654, 0.2402, 0.2382]) / 3
-# DATASET_MEAN = np.array([0.5298, 0.4365, 0.3811])
-# DATASET_STD = np.array([0.2654, 0.2402, 0.2382])
+DATASET_MEAN = np.array([0.5298, 0.4365, 0.3811])
+DATASET_STD = np.array([0.2654, 0.2402, 0.2382])
 
 # For training:
 train_transforms = A.Compose(
