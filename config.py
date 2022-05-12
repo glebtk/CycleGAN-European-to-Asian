@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import albumentations as A
 
@@ -34,15 +35,17 @@ CHECKPOINT_DISC_ASIAN = "disc_asian.pth.tar"
 
 DATASET_MEAN = sum([0.5298, 0.4365, 0.3811]) / 3
 DATASET_STD = sum([0.2654, 0.2402, 0.2382]) / 3
+# DATASET_MEAN = np.array([0.5298, 0.4365, 0.3811])
+# DATASET_STD = np.array([0.2654, 0.2402, 0.2382])
 
 # For training:
 train_transforms = A.Compose(
     [
         A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE),
         A.HorizontalFlip(p=0.5),
-        A.Rotate(p=1.0, limit=10),
+        A.Rotate(limit=10, always_apply=True),
         A.ISONoise(p=0.15, intensity=(0.1, 0.5), color_shift=(0.01, 0.05)),
-        A.RandomBrightnessContrast(p=1.0, brightness_limit=0.2, contrast_limit=0.2),
+        A.ColorJitter(brightness=0.15, contrast=0.15, saturation=0.025, hue=0.02, always_apply=True),
         A.Normalize(mean=DATASET_MEAN, std=DATASET_STD, max_pixel_value=255.0),
         ToTensorV2(),
      ],
