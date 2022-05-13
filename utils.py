@@ -61,9 +61,14 @@ def get_current_time():
 
 
 def tensor_to_array(tensor):
-    tensor = tensor.cpu().detach().numpy()
-    tensor = np.moveaxis(tensor, 0, -1)  # Меняем порядок осей на такой, как в PIL Image.   (C, H, W) -> (H, W, C)
-    tensor = (tensor * config.DATASET_STD + config.DATASET_MEAN) * 255  # Производим денормализацию изображения
-    tensor = np.array(tensor, dtype=np.uint8)  # Меняем тип данных
-    return tensor
+    array = tensor.cpu().detach().numpy()
+
+    # Костыль собственной персоной :)
+    if len(array.shape) == 4:
+        array = array[0, :, :, :]
+
+    array = np.moveaxis(array, 0, -1)  # Меняем порядок осей на такой, как в PIL Image.   (C, H, W) -> (H, W, C)
+    array = (array * config.DATASET_STD + config.DATASET_MEAN) * 255  # Производим денормализацию изображения
+    array = np.array(array, dtype=np.uint8)  # Меняем тип данных
+    return array
 
