@@ -62,7 +62,8 @@ def train():
     g_scaler = torch.cuda.amp.GradScaler()
     d_scaler = torch.cuda.amp.GradScaler()
 
-    writer = SummaryWriter(log_dir="tensorboard/runs")
+    writer = SummaryWriter()
+    # writer = SummaryWriter(log_dir="tensorboard/runs")
 
     # ----- Цикл обучения ----- #
     for epoch in range(config.NUM_EPOCHS):
@@ -140,8 +141,8 @@ def train():
             epoch_D_loss += D_loss
             epoch_G_loss += G_loss
 
-            if config.USE_TENSORBOARD:
-                current_images = torch.cat((fake_asian_image[0, :, :, :], fake_european_image[0, :, :, :]), dim=2)
+            if config.USE_TENSORBOARD and idx % 50 == 0:
+                current_images = torch.cat((fake_asian_image[0, :, :, :], fake_european_image[0, :, :, :]), dim=2)  # Вот здесь не денормализировано
                 writer.add_image("Current images", current_images, global_step=idx)  # ?
 
         # Сохраняем модели
@@ -161,8 +162,8 @@ def train():
             writer.add_scalar("Generators loss per epoch", epoch_G_loss, global_step=epoch)
             writer.add_scalar("Discriminators loss per epoch", epoch_D_loss, global_step=epoch)
 
-            # model_test.test(save_dir=save_dir, name=f"{epoch + 1}_epoch_test.png")
-            writer.add_images("Generated images", model_test.test(), global_step=epoch)
+            # model_test.test_1(save_dir=save_dir, name=f"{epoch + 1}_epoch_test.png")
+            writer.add_image("Generated images", model_test.test(), global_step=epoch)
 
 
 if __name__ == "__main__":

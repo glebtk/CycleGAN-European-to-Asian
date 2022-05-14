@@ -47,7 +47,9 @@ def test(img_dir="test_images"):
     pred_E = np.concatenate(pred_E)
     pred_A = np.concatenate(pred_A)
 
-    return np.concatenate((images, pred_E, pred_A), axis=1)
+    result = np.concatenate((images, pred_E, pred_A), axis=1)
+    result = np.moveaxis(result, -1, 0)
+    return result
 
 
 # def test(img_dir="test_images", save_dir="saved_images", name="test.png"):
