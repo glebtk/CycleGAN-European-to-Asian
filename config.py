@@ -21,11 +21,10 @@ LAMBDA_CYCLE = 10
 
 LOAD_MODEL = True
 SAVE_MODEL = True
-TEST_EVERY_SAVE = True
+USE_TENSORBOARD = True
 
 # Датасет
 TRAIN_DIR = "dataset/train"
-VAL_DIR = "dataset/val"
 CHECKPOINT_DIR = "checkpoints"
 
 CHECKPOINT_GEN_EUROPEAN = "gen_european.pth.tar"

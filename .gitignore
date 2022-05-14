@@ -1,6 +1,7 @@
 /.idea/*
 /__pycache__/*
 __test.py
+/tensorboard/*
 
 # Не загружать датасет
 /dataset/train/European/*

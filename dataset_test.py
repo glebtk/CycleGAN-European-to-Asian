@@ -24,8 +24,18 @@ def test(img_dir="dataset/train/class_A", save_dir="saved_images/", name="test.p
         # Собираем результат в одну картинку
         result = torchvision.utils.make_grid(images, nrow=len(images))
 
+        result = result.numpy()
+        result = np.moveaxis(result, 0, -1)
+        print(result.shape)
+        result = (result * config.DATASET_STD + config.DATASET_MEAN) * 255
+        result = np.array(result, dtype=np.uint8)
+        print(result.shape)
         # Сохраняем
-        torchvision.utils.save_image(result*config.DATASET_STD+config.DATASET_MEAN, save_dir + f"{i}_" + name)
+        result = Image.fromarray(result)
+
+        path = os.path.join(save_dir, f"{i}_" + name)
+        result.save(path)
+        # torchvision.utils.save_image(result*config.DATASET_STD+config.DATASET_MEAN, save_dir + f"{i}_" + name)
         print("Successfully saved!")
 
 
