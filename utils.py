@@ -82,10 +82,15 @@ def postprocessing(tensor, return_format="array"):
         if len(image.shape) == 4:
             image = image[-1, ...]
 
-        image = np.moveaxis(image, 0, -1)
-        image = (image * config.DATASET_STD + config.DATASET_MEAN) * 255
+        for channel in range(3):
+            image[channel] = image[channel] * config.DATASET_STD[channel] + config.DATASET_MEAN[channel]
 
-        return image.astype('np.uint8')
+        image *= 255
+
+        # image = np.moveaxis(image, 0, -1)
+        # image = (image * config.DATASET_STD + config.DATASET_MEAN) * 255
+
+        return image.astype('uint8')
 
     elif return_format == "tensor":
         image = tensor

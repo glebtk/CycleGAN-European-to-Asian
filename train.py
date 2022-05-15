@@ -1,3 +1,5 @@
+import time
+
 import config
 import model_test
 import torch.nn as nn
@@ -16,8 +18,8 @@ from utils import *
 
 def train():
     # Инициализируем модели
-    gen_European = Generator(in_channels=config.IN_CHANNELS, num_residuals=8).to(config.DEVICE)
-    gen_Asian = Generator(in_channels=config.IN_CHANNELS, num_residuals=8).to(config.DEVICE)
+    gen_European = Generator(in_channels=config.IN_CHANNELS, num_residuals=config.NUM_RESIDUALS).to(config.DEVICE)
+    gen_Asian = Generator(in_channels=config.IN_CHANNELS, num_residuals=config.NUM_RESIDUALS).to(config.DEVICE)
     disc_European = Discriminator(in_channels=config.IN_CHANNELS).to(config.DEVICE)
     disc_Asian = Discriminator(in_channels=config.IN_CHANNELS).to(config.DEVICE)
 
@@ -78,34 +80,34 @@ def train():
             asian_image = asian_image.to(config.DEVICE)
 
             # ---------- Обучаем дискриминаторы: ---------- #
-            with torch.cuda.amp.autocast():
-                # Из картинки азиатского лица генерируем фейковую картинку европейского лица
-                fake_european_image = gen_European(asian_image)
+            # with torch.cuda.amp.autocast():
+            # Из картинки азиатского лица генерируем фейковую картинку европейского лица
+            fake_european_image = gen_European(asian_image)
 
-                # Получаем предсказания дискриминатора на реальной и на фейковой картинке
-                real_disc_European_prediction = disc_European(european_image)
-                fake_disc_European_prediction = disc_European(fake_european_image.detach())
+            # Получаем предсказания дискриминатора на реальной и на фейковой картинке
+            real_disc_European_prediction = disc_European(european_image)
+            fake_disc_European_prediction = disc_European(fake_european_image.detach())
 
-                # Вычисляем и суммируем loss
-                real_disc_European_loss = MSE(real_disc_European_prediction, torch.ones_like(real_disc_European_prediction))
-                fake_disc_European_loss = MSE(fake_disc_European_prediction,
-                                              torch.zeros_like(fake_disc_European_prediction))
-                disc_European_loss = real_disc_European_loss + fake_disc_European_loss
+            # Вычисляем и суммируем loss
+            real_disc_European_loss = MSE(real_disc_European_prediction, torch.ones_like(real_disc_European_prediction))
+            fake_disc_European_loss = MSE(fake_disc_European_prediction,
+                                          torch.zeros_like(fake_disc_European_prediction))
+            disc_European_loss = real_disc_European_loss + fake_disc_European_loss
 
-                # Из картинки европейского лица генерируем фейковую картинку азиатского лица
-                fake_asian_image = gen_Asian(european_image)
+            # Из картинки европейского лица генерируем фейковую картинку азиатского лица
+            fake_asian_image = gen_Asian(european_image)
 
-                # Получаем предсказания дискриминатора на реальной и на фейковой картинке
-                real_disc_Asian_prediction = disc_Asian(asian_image)
-                fake_disc_Asian_prediction = disc_Asian(fake_asian_image.detach())
+            # Получаем предсказания дискриминатора на реальной и на фейковой картинке
+            real_disc_Asian_prediction = disc_Asian(asian_image)
+            fake_disc_Asian_prediction = disc_Asian(fake_asian_image.detach())
 
-                # Вычисляем и суммируем loss
-                real_disc_Asian_loss = MSE(real_disc_Asian_prediction, torch.ones_like(real_disc_Asian_prediction))
-                fake_disc_Asian_loss = MSE(fake_disc_Asian_prediction, torch.zeros_like(fake_disc_Asian_prediction))
-                disc_Asian_loss = real_disc_Asian_loss + fake_disc_Asian_loss
+            # Вычисляем и суммируем loss
+            real_disc_Asian_loss = MSE(real_disc_Asian_prediction, torch.ones_like(real_disc_Asian_prediction))
+            fake_disc_Asian_loss = MSE(fake_disc_Asian_prediction, torch.zeros_like(fake_disc_Asian_prediction))
+            disc_Asian_loss = real_disc_Asian_loss + fake_disc_Asian_loss
 
-                # Объединяем loss дискриминаторов
-                D_loss = (disc_European_loss + disc_Asian_loss) / 2
+            # Объединяем loss дискриминаторов
+            D_loss = (disc_European_loss + disc_Asian_loss) / 2
 
             # Обновляем веса дискриминаторов
             opt_disc.zero_grad()
@@ -114,26 +116,26 @@ def train():
             d_scaler.update()
 
             # ---------- Обучаем генераторы: ---------- #
-            with torch.cuda.amp.autocast():
-                # Вычисляем adversarial loss для обоих генераторов
-                disc_European_pred = disc_European(fake_european_image)
-                disc_Asian_pred = disc_Asian(fake_asian_image)
-                gen_European_adversarial_loss = MSE(disc_European_pred, torch.ones_like(disc_European_pred))
-                gen_Asian_adversarial_loss = MSE(disc_Asian_pred, torch.ones_like(disc_Asian_pred))
+            # with torch.cuda.amp.autocast():
+            # Вычисляем adversarial loss для обоих генераторов
+            disc_European_pred = disc_European(fake_european_image)
+            disc_Asian_pred = disc_Asian(fake_asian_image)
+            gen_European_adversarial_loss = MSE(disc_European_pred, torch.ones_like(disc_European_pred))
+            gen_Asian_adversarial_loss = MSE(disc_Asian_pred, torch.ones_like(disc_Asian_pred))
 
-                # Вычисляем cycle loss для обоих генераторов
-                cycle_fake_European = gen_European(fake_asian_image)
-                cycle_fake_Asian = gen_Asian(fake_european_image)
-                gen_European_cycle_loss = L1(european_image, cycle_fake_European)
-                gen_Asian_cycle_loss = L1(asian_image, cycle_fake_Asian)
+            # Вычисляем cycle loss для обоих генераторов
+            cycle_fake_European = gen_European(fake_asian_image)
+            cycle_fake_Asian = gen_Asian(fake_european_image)
+            gen_European_cycle_loss = L1(european_image, cycle_fake_European)
+            gen_Asian_cycle_loss = L1(asian_image, cycle_fake_Asian)
 
-                # Объединяем loss
-                G_loss = (
-                        gen_European_adversarial_loss
-                        + gen_Asian_adversarial_loss
-                        + gen_European_cycle_loss * config.LAMBDA_CYCLE
-                        + gen_Asian_cycle_loss * config.LAMBDA_CYCLE
-                )
+            # Объединяем loss
+            G_loss = (
+                    gen_European_adversarial_loss
+                    + gen_Asian_adversarial_loss
+                    + gen_European_cycle_loss * config.LAMBDA_CYCLE
+                    + gen_Asian_cycle_loss * config.LAMBDA_CYCLE
+            )
 
             # Обновляем веса генераторов
             opt_gen.zero_grad()
@@ -147,8 +149,8 @@ def train():
             if config.USE_TENSORBOARD and idx % 50 == 0:
                 fake_asian_image = postprocessing(fake_asian_image)
                 fake_european_image = postprocessing(fake_european_image)
-                current_images = np.concatenate((fake_asian_image, fake_european_image), axis=3)
-                writer.add_image("Current images", current_images, idx)
+                current_images = np.concatenate((fake_asian_image, fake_european_image), axis=2)
+                writer.add_image("Current images", current_images, int(time.time() * 1000))
 
         # Сохраняем модели
         if config.SAVE_MODEL:

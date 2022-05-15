@@ -85,7 +85,7 @@ class Generator(nn.Module):
 
 def test():
     x = torch.randn((config.BATCH_SIZE, config.IN_CHANNELS, config.IMAGE_SIZE, config.IMAGE_SIZE))
-    model = Generator(config.IN_CHANNELS, num_residuals=8)
+    model = Generator(config.IN_CHANNELS, num_residuals=config.NUM_RESIDUALS)
     prediction = model(x)
 
     print("Input shape: ", x.shape)

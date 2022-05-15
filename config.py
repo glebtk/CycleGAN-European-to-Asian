@@ -1,21 +1,22 @@
-import numpy as np
 import torch
+import numpy as np
 import albumentations as A
 
 from albumentations.pytorch import ToTensorV2
 
 
 # Предустановки
-IMAGE_SIZE = 256
-IN_CHANNELS = 3
-
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 NUM_WORKERS = 2
+
+IMAGE_SIZE = 256
+IN_CHANNELS = 3
+NUM_RESIDUALS = 8
 
 # Обучение
 NUM_EPOCHS = 100
 BATCH_SIZE = 1
-LEARNING_RATE = 2e-4
+LEARNING_RATE = 3e-4
 
 LAMBDA_CYCLE = 10
 
@@ -27,15 +28,15 @@ USE_TENSORBOARD = True
 TRAIN_DIR = "dataset/train"
 CHECKPOINT_DIR = "checkpoints"
 
+DATASET_MEAN = np.array([0.5298, 0.4365, 0.3811])
+DATASET_STD = np.array([0.2654, 0.2402, 0.2382])
+
+# Другое
 CHECKPOINT_GEN_EUROPEAN = "gen_european.pth.tar"
 CHECKPOINT_GEN_ASIAN = "gen_asian.pth.tar"
 CHECKPOINT_DISC_EUROPEAN = "disc_european.pth.tar"
 CHECKPOINT_DISC_ASIAN = "disc_asian.pth.tar"
 
-DATASET_MEAN = np.array([0.5298, 0.4365, 0.3811])
-DATASET_STD = np.array([0.2654, 0.2402, 0.2382])
-
-# For training:
 train_transforms = A.Compose(
     [
         A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE),
@@ -49,7 +50,6 @@ train_transforms = A.Compose(
     additional_targets={"image0": "image"},
 )
 
-# For test:
 test_transforms = A.Compose(
     [
         A.Resize(width=IMAGE_SIZE, height=IMAGE_SIZE),
