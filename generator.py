@@ -10,7 +10,7 @@ class ConvBlockDown(nn.Module):
     def __init__(self, in_channels, out_channels, use_act=True, **kwargs):
         super().__init__()
         self.conv = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, padding_mode="reflect", **kwargs),
+            nn.Conv2d(in_channels, out_channels, padding_mode="zeros", **kwargs),
             nn.InstanceNorm2d(out_channels),
             nn.ReLU(inplace=True) if use_act else nn.Identity(),
         )
@@ -48,7 +48,7 @@ class Generator(nn.Module):
     def __init__(self, in_channels, num_features=64, num_residuals=9):
         super().__init__()
         self.initial = nn.Sequential(
-            nn.Conv2d(in_channels, num_features, kernel_size=7, stride=1, padding=3, padding_mode="reflect"),
+            nn.Conv2d(in_channels, num_features, kernel_size=7, stride=1, padding=3, padding_mode="zeros"),
             nn.ReLU(inplace=True),
         )
 
@@ -65,12 +65,12 @@ class Generator(nn.Module):
 
         self.up_blocks = nn.ModuleList(
             [
-                ConvBlockUp(num_features*4, num_features*2, kernel_size=3, stride=2, padding=1),
-                ConvBlockUp(num_features*2, num_features*1, kernel_size=3, stride=2, padding=1),
+                ConvBlockUp(num_features*4, num_features*2, kernel_size=3, stride=2, padding=1, output_padding=1),
+                ConvBlockUp(num_features*2, num_features*1, kernel_size=3, stride=2, padding=1, output_padding=1),
             ]
         )
 
-        self.last = nn.Conv2d(num_features * 1, in_channels, kernel_size=6, stride=1, padding=4, padding_mode="reflect")
+        self.last = nn.Conv2d(num_features * 1, in_channels, kernel_size=7, stride=1, padding=3, padding_mode="zeros")
 
     def forward(self, x):
         x = self.initial(x)
@@ -85,13 +85,15 @@ class Generator(nn.Module):
 
 def test():
     x = torch.randn((config.BATCH_SIZE, config.IN_CHANNELS, config.IMAGE_SIZE, config.IMAGE_SIZE))
-    model = Generator(config.IN_CHANNELS, num_residuals=9)
+    model = Generator(config.IN_CHANNELS, num_residuals=8)
     prediction = model(x)
 
     print("Input shape: ", x.shape)
     print("Output shape: ", prediction.shape)
 
     # summary(model, depth=5)
+
+    # print(model)
 
 
 if __name__ == "__main__":
