@@ -37,18 +37,18 @@ def test(img_dir="test_images"):
     gen_E, gen_A = load_generators()
 
     # Генерируем изображения:
-    pred_E = [tensor_to_array(gen_E(img)) for img in images]
-    pred_A = [tensor_to_array(gen_A(img)) for img in images]
+    pred_E = [postprocessing(gen_E(img)) for img in images]
+    pred_A = [postprocessing(gen_A(img)) for img in images]
 
-    images = [tensor_to_array(img) for img in images]
+    images = [postprocessing(img) for img in images]
 
-    # Собираем всё вместе и сохраняем:
+    # Собираем всё вместе:
     images = np.concatenate(images)
     pred_E = np.concatenate(pred_E)
     pred_A = np.concatenate(pred_A)
 
     result = np.concatenate((images, pred_E, pred_A), axis=1)
-    result = np.moveaxis(result, -1, 0)
+    # result = np.moveaxis(result, -1, 0)
     return result
 
 

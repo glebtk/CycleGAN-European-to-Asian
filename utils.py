@@ -11,7 +11,6 @@ from datetime import datetime
 
 
 def save_checkpoint(model, optimizer, filename):
-    print("=> Сохраняется " + filename)
     checkpoint = {
         "state_dict": model.state_dict(),
         "optimizer": optimizer.state_dict(),
@@ -21,7 +20,6 @@ def save_checkpoint(model, optimizer, filename):
 
 def load_checkpoint(model, optimizer, lr, checkpoint_file):
     try:
-        print("=> Загружается " + checkpoint_file)
         checkpoint = torch.load(checkpoint_file, map_location=config.DEVICE)
         model.load_state_dict(checkpoint["state_dict"])
         optimizer.load_state_dict(checkpoint["optimizer"])
@@ -38,6 +36,7 @@ def get_last_checkpoint(model_name):
     try:
         checkpoints = os.listdir(config.CHECKPOINT_DIR)
         checkpoints = [d for d in checkpoints if os.path.isdir(os.path.join(config.CHECKPOINT_DIR, d))]
+        checkpoints.sort()
 
         last_checkpoint = os.path.join(config.CHECKPOINT_DIR, checkpoints[-1])
 
@@ -73,3 +72,34 @@ def tensor_to_array(tensor):
     array = np.array(array, dtype=np.uint8)  # Меняем тип данных
     return array
 
+
+def postprocessing(tensor, return_format="array"):
+    tensor = tensor.cpu().detach()
+
+    if return_format == "array":
+        image = tensor.numpy()
+
+        if len(image.shape) == 4:
+            image = image[-1, ...]
+
+        image = np.moveaxis(image, 0, -1)
+        image = (image * config.DATASET_STD + config.DATASET_MEAN) * 255
+
+        return image.astype('np.uint8')
+
+    elif return_format == "tensor":
+        image = tensor
+
+        if len(image.size) == 4:
+            image = image[-1, ...]
+
+        for channel in range(3):
+            image[channel] = image[channel] * config.DATASET_STD[channel] + config.DATASET_MEAN[channel]
+
+        image *= 255
+
+        return image
+
+    else:
+        print("Ошибка: неверный формат")
+        return tensor
