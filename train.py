@@ -71,7 +71,7 @@ def train():
         epoch_G_loss = 0
         epoch_D_loss = 0
 
-        loop = tqdm(data_loader, leave=True)
+        loop = tqdm(data_loader)
         for idx, (european_image, asian_image) in enumerate(loop):
             european_image = european_image.to(config.DEVICE)
             asian_image = asian_image.to(config.DEVICE)
@@ -142,8 +142,11 @@ def train():
             epoch_G_loss += G_loss
 
             if config.USE_TENSORBOARD and idx % 50 == 0:
-                current_images = torch.cat((fake_asian_image[0, :, :, :], fake_european_image[0, :, :, :]), dim=2)  # Вот здесь не денормализировано
-                writer.add_image("Current images", current_images, global_step=idx)  # ?
+                fa = fake_asian_image.cpu().detach().numpy()
+                fe = fake_european_image.cpu().detach().numpy()
+
+                current_images = np.concatenate((fa, fe), axis=3)
+                writer.add_image("Current images", current_images[0, :, :, :], 0)
 
         # Сохраняем модели
         if config.SAVE_MODEL:
