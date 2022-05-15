@@ -170,8 +170,6 @@ def train():
         if config.USE_TENSORBOARD:
             writer.add_scalar("Generators loss per epoch", epoch_G_loss, global_step=epoch)
             writer.add_scalar("Discriminators loss per epoch", epoch_D_loss, global_step=epoch)
-
-            # model_test.test_1(save_dir=save_dir, name=f"{epoch + 1}_epoch_test.png")
             writer.add_image("Generated images", model_test.test(), global_step=epoch)
 
 

@@ -6,6 +6,8 @@ from torchsummary import summary
 import config
 
 
+# Добавить LReLU()
+
 class Block(nn.Module):
     def __init__(self, in_channels, out_channels, stride):
         super().__init__()
