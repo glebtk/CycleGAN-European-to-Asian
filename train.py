@@ -1,14 +1,12 @@
 import time
-
 import config
+import numpy as np
 import model_test
 import torch.nn as nn
 import torch.optim as optim
 
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-
-from torchvision.utils import save_image
 from tqdm import tqdm
 from dataset import EuropeanAsianDataset
 from discriminator import Discriminator
@@ -80,7 +78,6 @@ def train():
             asian_image = asian_image.to(config.DEVICE)
 
             # ---------- Обучаем дискриминаторы: ---------- #
-            # with torch.cuda.amp.autocast():
             # Из картинки азиатского лица генерируем фейковую картинку европейского лица
             fake_european_image = gen_European(asian_image)
 
@@ -115,7 +112,6 @@ def train():
             d_scaler.update()
 
             # ---------- Обучаем генераторы: ---------- #
-            # with torch.cuda.amp.autocast():
             # Вычисляем adversarial loss для обоих генераторов
             disc_European_pred = disc_European(fake_european_image)
             disc_Asian_pred = disc_Asian(fake_asian_image)
@@ -141,9 +137,6 @@ def train():
             g_scaler.scale(G_loss).backward()
             g_scaler.step(opt_gen)
             g_scaler.update()
-
-            epoch_D_loss += D_loss
-            epoch_G_loss += G_loss
 
             if config.USE_TENSORBOARD and idx % 50 == 0:
                 fake_asian_image = postprocessing(fake_asian_image)

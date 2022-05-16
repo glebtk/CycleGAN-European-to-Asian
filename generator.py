@@ -1,9 +1,8 @@
 import torch
 import torch.nn as nn
+import config
 
 from torchsummary import summary
-
-import config
 
 
 class ConvBlockDown(nn.Module):

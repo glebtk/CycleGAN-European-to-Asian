@@ -1,12 +1,9 @@
 import torch
 import torch.nn as nn
+import config
 
 from torchsummary import summary
 
-import config
-
-
-# Добавить LReLU()
 
 class Block(nn.Module):
     def __init__(self, in_channels, out_channels, stride):
@@ -14,7 +11,7 @@ class Block(nn.Module):
         self.conv = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, 4, stride, 1, bias=True, padding_mode="zeros"),
             nn.InstanceNorm2d(out_channels),
-            nn.ReLU(),
+            nn.LeakyReLU(0.2, inplace=True),
         )
 
     def forward(self, x):
@@ -36,7 +33,7 @@ class Discriminator(nn.Module):
                 padding=1,
                 padding_mode="zeros",
             ),
-            nn.ReLU(),
+            nn.LeakyReLU(0.2, inplace=True),
         )
 
         layers = []

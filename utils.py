@@ -1,10 +1,6 @@
 import os
 import sys
-
-import numpy as np
 import torch
-from PIL import Image
-
 import config
 
 from datetime import datetime
@@ -38,9 +34,9 @@ def get_last_checkpoint(model_name):
         checkpoints = [d for d in checkpoints if os.path.isdir(os.path.join(config.CHECKPOINT_DIR, d))]
         checkpoints.sort()
 
-        last_checkpoint = os.path.join(config.CHECKPOINT_DIR, checkpoints[-1])
+        last_checkpoint_directory = os.path.join(config.CHECKPOINT_DIR, checkpoints[-1])
 
-        return os.path.join(last_checkpoint, model_name)
+        return os.path.join(last_checkpoint_directory, model_name)
     except IndexError:
         print(f"Ошибка: в директории {config.CHECKPOINT_DIR} нет сохраненных чекпоинтов")
         sys.exit(1)
@@ -60,51 +56,17 @@ def get_current_time():
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 
-def tensor_to_array(tensor):
-    array = tensor.cpu().detach().numpy()
+def postprocessing(tensor):
+    image = tensor.cpu().detach().numpy()  # Конвертируем в np.array
 
-    # Костыль собственной персоной :)
-    if len(array.shape) == 4:
-        array = array[0, :, :, :]
+    # Если на вход пришел батч, берем из него только последнее изображение
+    if len(image.shape) == 4:
+        image = image[-1, :, :, :]
 
-    array = np.moveaxis(array, 0, -1)  # Меняем порядок осей на такой, как в PIL Image.   (C, H, W) -> (H, W, C)
-    array = (array * config.DATASET_STD + config.DATASET_MEAN) * 255  # Производим денормализацию изображения
-    array = np.array(array, dtype=np.uint8)  # Меняем тип данных
-    return array
+    # Производим денормализацию
+    for channel in range(config.IN_CHANNELS):
+        image[channel] = image[channel] * config.DATASET_STD[channel] + config.DATASET_MEAN[channel]
+        image[channel] *= 255
 
+    return image.astype('uint8')
 
-def postprocessing(tensor, return_format="array"):
-    tensor = tensor.cpu().detach()
-
-    if return_format == "array":
-        image = tensor.numpy()
-
-        if len(image.shape) == 4:
-            image = image[-1, ...]
-
-        for channel in range(3):
-            image[channel] = image[channel] * config.DATASET_STD[channel] + config.DATASET_MEAN[channel]
-
-        image *= 255
-
-        # image = np.moveaxis(image, 0, -1)
-        # image = (image * config.DATASET_STD + config.DATASET_MEAN) * 255
-
-        return image.astype('uint8')
-
-    elif return_format == "tensor":
-        image = tensor
-
-        if len(image.size) == 4:
-            image = image[-1, ...]
-
-        for channel in range(3):
-            image[channel] = image[channel] * config.DATASET_STD[channel] + config.DATASET_MEAN[channel]
-
-        image *= 255
-
-        return image
-
-    else:
-        print("Ошибка: неверный формат")
-        return tensor
