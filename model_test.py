@@ -4,6 +4,8 @@ import numpy as np
 import torch.optim as optim
 
 from PIL import Image
+from torch.utils.tensorboard import SummaryWriter
+
 from generator import Generator
 from utils import *
 
@@ -18,10 +20,10 @@ def load_generators():
         betas=(0.5, 0.999),
     )
 
-    load_checkpoint(gen_E, optimizer, config.LEARNING_RATE, get_last_checkpoint(config.CHECKPOINT_GEN_EUROPEAN))
     load_checkpoint(gen_A, optimizer, config.LEARNING_RATE, get_last_checkpoint(config.CHECKPOINT_GEN_ASIAN))
+    load_checkpoint(gen_E, optimizer, config.LEARNING_RATE, get_last_checkpoint(config.CHECKPOINT_GEN_EUROPEAN))
 
-    return gen_E, gen_A
+    return gen_A, gen_E
 
 
 def test(img_dir="test_images"):
@@ -34,7 +36,7 @@ def test(img_dir="test_images"):
     images = [img.to(config.DEVICE) for img in images]
 
     # Загружаем модели генераторов:
-    gen_E, gen_A = load_generators()
+    gen_A, gen_E = load_generators()
 
     # Генерируем изображения:
     pred_E = [postprocessing(gen_E(img)) for img in images]
@@ -51,4 +53,8 @@ def test(img_dir="test_images"):
 
 
 if __name__ == "__main__":
-    test(img_dir="test_images")
+    # test(img_dir="test_images")
+
+    writer = SummaryWriter()
+    current = test()
+    writer.add_image("Generated images", current, 0)

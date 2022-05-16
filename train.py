@@ -90,8 +90,7 @@ def train():
 
             # Вычисляем и суммируем loss
             real_disc_European_loss = MSE(real_disc_European_prediction, torch.ones_like(real_disc_European_prediction))
-            fake_disc_European_loss = MSE(fake_disc_European_prediction,
-                                          torch.zeros_like(fake_disc_European_prediction))
+            fake_disc_European_loss = MSE(fake_disc_European_prediction, torch.zeros_like(fake_disc_European_prediction))
             disc_European_loss = real_disc_European_loss + fake_disc_European_loss
 
             # Из картинки европейского лица генерируем фейковую картинку азиатского лица
