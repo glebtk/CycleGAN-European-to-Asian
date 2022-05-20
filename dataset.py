@@ -13,31 +13,23 @@ class EuropeanAsianDataset(Dataset):
         self.transform = transform
 
         # Получаем списки имен изображений обоих классов
-        self.european_names_list = os.listdir(root_european)
-        self.asian_names_list = os.listdir(root_asian)
+        self.european_names = os.listdir(root_european)
+        self.asian_names = os.listdir(root_asian)
 
         # Находим количество изображений каждого класса
-        self.european_list_len = len(self.european_names_list)
-        self.asian_list_len = len(self.asian_names_list)
+        self.european_len = len(self.european_names)
+        self.asian_len = len(self.asian_names)
 
         # Определяем условную длину датасета
-        self.dataset_length = max(self.european_list_len, self.asian_list_len)
+        self.dataset_len = max(self.european_len, self.asian_len)
 
     def __len__(self):
-        return self.dataset_length
+        return self.dataset_len
 
     def __getitem__(self, index):
-        european_index = index
-        asian_index = index
-
-        # Если количество изображений разное,
-        if self.european_list_len != self.asian_list_len:
-            european_index = self.european_names_list[index % self.dataset_length]
-            asian_index = self.asian_names_list[index % self.dataset_length]
-
         # Получаем имена изображений
-        european_name = self.european_names_list[european_index]
-        asian_name = self.asian_names_list[asian_index]
+        european_name = self.european_names[index % self.european_len]
+        asian_name = self.asian_names[index % self.asian_len]
 
         # Получаем полные пути к изображениям
         european_path = os.path.join(self.root_european, european_name)

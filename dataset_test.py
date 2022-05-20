@@ -1,43 +1,28 @@
 import os
-
-import numpy as np
-import torch
-import torch.optim as optim
-import torchvision
-from PIL import Image
-
 import config
-import utils
-from generator import Generator
+import numpy as np
+
+from PIL import Image
+from utils import *
 
 
-def test(img_dir="dataset/train/class_A", save_dir="saved_images/", name="test.png"):
-    for i in range(5):
-        # Загружаем и подготавливаем картинки:
-        images = [img for img in os.listdir(img_dir)]  # Names
-        images = images[:10]
-        images = [Image.open(img_dir + img).convert("RGB") for img in images]  # Names -> PIL Images
+def test(img_dir="test_images", save_dir="saved_images", n=1):
+    for i in range(n):
+        images = [img for img in os.listdir(img_dir) if img.endswith(".png") or img.endswith(".jpg")]  # Names
+        images = [Image.open(os.path.join(img_dir, img)).convert("RGB") for img in images]  # Names -> PIL Images
         images = [np.array(img) for img in images]  # PIL Images -> np.arrays
         images = [config.train_transforms(image=img)["image"] for img in images]  # Transforms
-        images = torch.stack(images)  # List of tensors -> Tensor
+        images = [postprocessing(img) for img in images]
+        images = np.concatenate(images, axis=2)
+        images = np.moveaxis(images, 0, -1)
 
-        # Собираем результат в одну картинку
-        result = torchvision.utils.make_grid(images, nrow=len(images))
+        path = os.path.join(save_dir, f"dataset_test_{get_current_time()}.png")
 
-        result = result.numpy()
-        result = np.moveaxis(result, 0, -1)
-        print(result.shape)
-        result = (result * config.DATASET_STD + config.DATASET_MEAN) * 255
-        result = np.array(result, dtype=np.uint8)
-        print(result.shape)
-        # Сохраняем
-        result = Image.fromarray(result)
+        images = Image.fromarray(images)
+        images.save(path)
 
-        path = os.path.join(save_dir, f"{i}_" + name)
-        result.save(path)
-        # torchvision.utils.save_image(result*config.DATASET_STD+config.DATASET_MEAN, save_dir + f"{i}_" + name)
-        print("Successfully saved!")
+    print(f"{n} images successfully saved!")
 
 
 if __name__ == "__main__":
-    test(img_dir="test_images/", save_dir="saved_images/")
+    test(img_dir="test_images", save_dir="saved_images", n=5)
