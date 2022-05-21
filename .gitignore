@@ -11,9 +11,8 @@ __test.py
 # Не загружать сохраненные чекпоинты
 /checkpoints/**
 
-# Не загружать сохраненные изображения (кроме киперов)
+# Не загружать сохраненные изображения
 /saved_images/*.png
 /saved_images/fake_european/*.png
 /saved_images/fake_asian/*.png
-!/saved_images/fake_european/.gitkeep
-!/saved_images/fake_asian/.gitkeep
+!/saved_images/.gitkeep
