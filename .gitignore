@@ -1,7 +1,6 @@
 /.idea/*
 /__pycache__/*
 __test.py
-/tensorboard/*
 /runs/*
 
 # Не загружать датасет
