@@ -1,4 +1,3 @@
-import os
 import time
 import numpy as np
 import torch.optim as optim
@@ -26,7 +25,6 @@ def load_generators():
 
 
 def test(img_dir="test_images"):
-
     # Загружаем и подготавливаем картинки:
     images = [img for img in os.listdir(img_dir) if img.endswith(".png") or img.endswith(".jpg")]  # Names
     images = [Image.open(os.path.join(img_dir, img)).convert("RGB") for img in images]  # Names -> PIL Images
@@ -38,10 +36,10 @@ def test(img_dir="test_images"):
     gen_E, gen_A = load_generators()
 
     # Генерируем изображения:
-    pred_E = [postprocessing(gen_E(img)) for img in images]
-    pred_A = [postprocessing(gen_A(img)) for img in images]
+    pred_E = [postprocessing(gen_E(img.detach())) for img in images]
+    pred_A = [postprocessing(gen_A(img.detach())) for img in images]
 
-    images = [postprocessing(img) for img in images]
+    images = [postprocessing(img.detach()) for img in images]
 
     # Собираем всё вместе:
     images = np.concatenate(images, axis=2)

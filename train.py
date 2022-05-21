@@ -1,16 +1,15 @@
-import time
 import config
-import numpy as np
 import model_test
+import numpy as np
 import torch.nn as nn
 import torch.optim as optim
 
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-from tqdm import tqdm
 from dataset import EuropeanAsianDataset
 from discriminator import Discriminator
 from generator import Generator
+from tqdm import tqdm
 from utils import *
 
 
@@ -64,25 +63,21 @@ def train():
     d_scaler = torch.cuda.amp.GradScaler()
 
     writer = SummaryWriter()
-    # writer = SummaryWriter(log_dir="tensorboard/runs")
 
     # ----- Цикл обучения ----- #
     for epoch in range(config.NUM_EPOCHS):
 
-        epoch_G_loss = 0
-        epoch_D_loss = 0
-
         loop = tqdm(data_loader)
-        for idx, (european_image, asian_image) in enumerate(loop):
-            european_image = european_image.to(config.DEVICE)
-            asian_image = asian_image.to(config.DEVICE)
+        for idx, (real_european_image, real_asian_image) in enumerate(loop):
+            real_european_image = real_european_image.to(config.DEVICE)
+            real_asian_image = real_asian_image.to(config.DEVICE)
 
             # ---------- Обучаем дискриминаторы: ---------- #
             # Из картинки азиатского лица генерируем фейковую картинку европейского лица
-            fake_european_image = gen_European(asian_image)
+            fake_european_image = gen_European(real_asian_image)
 
             # Получаем предсказания дискриминатора на реальной и на фейковой картинке
-            real_disc_European_prediction = disc_European(european_image)
+            real_disc_European_prediction = disc_European(real_european_image)
             fake_disc_European_prediction = disc_European(fake_european_image.detach())
 
             # Вычисляем и суммируем loss
@@ -91,10 +86,10 @@ def train():
             disc_European_loss = real_disc_European_loss + fake_disc_European_loss
 
             # Из картинки европейского лица генерируем фейковую картинку азиатского лица
-            fake_asian_image = gen_Asian(european_image)
+            fake_asian_image = gen_Asian(real_european_image)
 
             # Получаем предсказания дискриминатора на реальной и на фейковой картинке
-            real_disc_Asian_prediction = disc_Asian(asian_image)
+            real_disc_Asian_prediction = disc_Asian(real_asian_image)
             fake_disc_Asian_prediction = disc_Asian(fake_asian_image.detach())
 
             # Вычисляем и суммируем loss
@@ -119,17 +114,17 @@ def train():
             gen_Asian_adversarial_loss = MSE(disc_Asian_pred, torch.ones_like(disc_Asian_pred))
 
             # Вычисляем cycle loss для обоих генераторов
-            cycle_fake_European = gen_European(fake_asian_image)
-            cycle_fake_Asian = gen_Asian(fake_european_image)
-            gen_European_cycle_loss = L1(european_image, cycle_fake_European)
-            gen_Asian_cycle_loss = L1(asian_image, cycle_fake_Asian)
+            cycle_fake_European_image = gen_European(fake_asian_image)
+            cycle_fake_Asian_image = gen_Asian(fake_european_image)
+            gen_European_cycle_loss = L1(real_european_image, cycle_fake_European_image)
+            gen_Asian_cycle_loss = L1(real_asian_image, cycle_fake_Asian_image)
 
-            # Объединяем loss
+            # Объединяем loss. Cycle loss умножаем на повышающий коэффициент
             G_loss = (
-                    gen_European_adversarial_loss
-                    + gen_Asian_adversarial_loss
-                    + gen_European_cycle_loss * config.LAMBDA_CYCLE
-                    + gen_Asian_cycle_loss * config.LAMBDA_CYCLE
+                gen_European_adversarial_loss
+                + gen_Asian_adversarial_loss
+                + gen_European_cycle_loss * config.LAMBDA_CYCLE
+                + gen_Asian_cycle_loss * config.LAMBDA_CYCLE
             )
 
             # Обновляем веса генераторов
@@ -138,11 +133,11 @@ def train():
             g_scaler.step(opt_gen)
             g_scaler.update()
 
-            if config.USE_TENSORBOARD and idx % 50 == 0:
+            if config.USE_TENSORBOARD and idx % 100 == 0:
                 fake_asian_image = postprocessing(fake_asian_image)
                 fake_european_image = postprocessing(fake_european_image)
                 current_images = np.concatenate((fake_asian_image, fake_european_image), axis=2)
-                writer.add_image("Current images", current_images, int(time.time() * 1000))
+                writer.add_image(f"Current images {epoch+1} epoch", current_images, global_step=idx)
 
         # Сохраняем модели
         if config.SAVE_MODEL:
@@ -160,8 +155,6 @@ def train():
 
         # Обновляем tensorboard
         if config.USE_TENSORBOARD:
-            writer.add_scalar("Generators loss per epoch", epoch_G_loss, global_step=epoch)
-            writer.add_scalar("Discriminators loss per epoch", epoch_D_loss, global_step=epoch)
             writer.add_image("Generated images", model_test.test(), global_step=epoch)
 
 
