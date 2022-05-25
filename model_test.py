@@ -50,9 +50,7 @@ def test(img_dir="test_images"):
 
 
 if __name__ == "__main__":
-    # test(img_dir="test_images")
-
-    writer1 = SummaryWriter()
+    writer = SummaryWriter()
     current = test()
-    writer1.add_image("Generated images", current, global_step=0)
-    time.sleep(5)
+    writer.add_image("Generated images", current, global_step=0)
+    time.sleep(10)
