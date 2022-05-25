@@ -1,3 +1,5 @@
+import time
+
 import config
 import model_test
 import numpy as np
@@ -137,7 +139,7 @@ def train():
                 fake_asian_image = postprocessing(fake_asian_image)
                 fake_european_image = postprocessing(fake_european_image)
                 current_images = np.concatenate((fake_asian_image, fake_european_image), axis=2)
-                writer.add_image(f"Current images {epoch+1} epoch", current_images, global_step=idx)
+                writer.add_image(f"Current images", current_images, global_step=int(time.time()))
 
         # Сохраняем модели
         if config.SAVE_MODEL:

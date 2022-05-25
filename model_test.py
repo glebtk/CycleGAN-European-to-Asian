@@ -55,4 +55,4 @@ if __name__ == "__main__":
     writer1 = SummaryWriter()
     current = test()
     writer1.add_image("Generated images", current, global_step=0)
-    time.sleep(1)
+    time.sleep(5)
