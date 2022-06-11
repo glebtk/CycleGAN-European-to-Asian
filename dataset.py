@@ -13,8 +13,8 @@ class EuropeanAsianDataset(Dataset):
         self.transform = transform
 
         # Получаем списки имен изображений обоих классов
-        self.european_names = os.listdir(root_european)
-        self.asian_names = os.listdir(root_asian)
+        self.european_names = [name for name in os.listdir(root_european) if name.endswith(".jpg")]
+        self.asian_names = [name for name in os.listdir(root_asian) if name.endswith(".jpg")]
 
         # Находим количество изображений каждого класса
         self.european_len = len(self.european_names)
