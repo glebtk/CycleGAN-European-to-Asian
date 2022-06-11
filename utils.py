@@ -57,7 +57,8 @@ def get_current_time():
 
 
 def postprocessing(tensor):
-    image = tensor.cpu().detach().numpy()  # Конвертируем в np.array
+    # Конвертируем в np.array
+    image = tensor.cpu().detach().numpy()
 
     # Если на вход пришел батч, берем из него только последнее изображение
     if len(image.shape) == 4:
@@ -69,4 +70,3 @@ def postprocessing(tensor):
         image[channel] *= 255
 
     return image.astype('uint8')
-
