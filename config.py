@@ -17,7 +17,7 @@ NUM_EPOCHS = 100
 BATCH_SIZE = 1
 LEARNING_RATE = 3e-4
 LAMBDA_CYCLE = 10
-LOAD_MODEL = True
+LOAD_MODEL = False
 SAVE_MODEL = True
 USE_TENSORBOARD = True
 
@@ -25,9 +25,6 @@ USE_TENSORBOARD = True
 TRAIN_DIR = "dataset/train"
 DATASET_MEAN = np.array([0.5, 0.5, 0.5])
 DATASET_STD = np.array([0.5, 0.5, 0.5])
-
-# DATASET_MEAN = np.array([0.5298, 0.4365, 0.3811])
-# DATASET_STD = np.array([0.2654, 0.2402, 0.2382])
 
 # Другое
 CHECKPOINT_DIR = "checkpoints"
