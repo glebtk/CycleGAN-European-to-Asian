@@ -28,6 +28,8 @@ if __name__ == "__main__":
         download_and_unzip(url, path, file_name)
         os.remove(os.path.join(path, file_name))
 
+        print("=> Датасет загружен!")
+
     if LOAD_CHECKPOINT:
         url = "https://gitlab.com/glebtutik/european_to_asian_files/-/raw/main/checkpoints/checkpoints.zip"
         path = "checkpoints"
@@ -36,6 +38,8 @@ if __name__ == "__main__":
         download_and_unzip(url, path, file_name)
         os.remove(os.path.join(path, file_name))
 
+        print("=> Чекпоинт загружен!")
+
     if LOAD_TEST_IMAGES:
         url = "https://gitlab.com/glebtutik/european_to_asian_files/-/raw/main/test_images/test_images.zip"
         path = "test_images"
@@ -43,3 +47,5 @@ if __name__ == "__main__":
 
         download_and_unzip(url, path, file_name)
         os.remove(os.path.join(path, file_name))
+
+        print("=> Тестовые изображения загружены!")
