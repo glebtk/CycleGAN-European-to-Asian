@@ -3,9 +3,6 @@
 __test.py
 /runs/*
 
-# Не загружать датасет
-/dataset/train/European/*
-/dataset/train/Asian/*
 
 # Не загружать сохраненные чекпоинты
 /checkpoints/**
