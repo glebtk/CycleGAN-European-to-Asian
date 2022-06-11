@@ -1,5 +1,4 @@
 import time
-
 import config
 import model_test
 import numpy as np
