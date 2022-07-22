@@ -1,8 +1,6 @@
+import config
 import torch
 import torch.nn as nn
-import config
-
-from torchsummary import summary
 
 
 class ConvBlockDown(nn.Module):
@@ -31,7 +29,7 @@ class ResidualBlock(nn.Module):
 
 
 class ConvBlockUp(nn.Module):
-    def __init__(self, in_channels, out_channels, use_act=False, **kwargs):
+    def __init__(self, in_channels, out_channels, **kwargs):
         super().__init__()
         self.conv = nn.Sequential(
             nn.ConvTranspose2d(in_channels, out_channels, **kwargs),
@@ -80,24 +78,3 @@ class Generator(nn.Module):
             x = layer(x)
         x = self.last(x)
         return torch.tanh(x)
-
-
-def test():
-    x = torch.randn((config.BATCH_SIZE, config.IN_CHANNELS, config.IMAGE_SIZE, config.IMAGE_SIZE))
-    model = Generator(config.IN_CHANNELS, num_residuals=config.NUM_RESIDUALS)
-    prediction = model(x)
-
-    print("Input shape: ", x.shape)
-    print("Output shape: ", prediction.shape)
-
-    # summary(model, depth=5)
-
-    # print(model)
-
-
-if __name__ == "__main__":
-    test()
-
-
-
-

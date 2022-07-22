@@ -2,8 +2,6 @@ import config
 import torch
 import torch.nn as nn
 
-from torchsummary import summary
-
 
 class Block(nn.Module):
     def __init__(self, in_channels, out_channels, stride):
@@ -49,19 +47,3 @@ class Discriminator(nn.Module):
     def forward(self, x):
         x = self.initial(x)  # Первый слой
         return torch.sigmoid(self.model(x))  # Добавляем остальные слои
-
-
-def test():
-    x = torch.randn((config.BATCH_SIZE, config.IN_CHANNELS, config.IMAGE_SIZE, config.IMAGE_SIZE))
-    model = Discriminator(config.IN_CHANNELS)
-    prediction = model(x)
-
-    print("Input shape: ", x.shape)
-    print("Output shape: ", prediction.shape)
-
-    # summary(model, depth=5)
-    print(model)
-
-
-if __name__ == "__main__":
-    test()
