@@ -1,6 +1,5 @@
 import time
 import config
-import model_test
 import numpy as np
 import torch.nn as nn
 import torch.optim as optim
@@ -134,6 +133,7 @@ def train():
             g_scaler.step(opt_gen)
             g_scaler.update()
 
+            # Обновляем tensorboard (текущие фейковые изображения)
             if config.USE_TENSORBOARD and idx % 100 == 0:
                 fake_asian_image = postprocessing(fake_asian_image)
                 fake_european_image = postprocessing(fake_european_image)
@@ -154,9 +154,9 @@ def train():
             save_checkpoint(disc_European, opt_disc, os.path.join(save_dir, config.CHECKPOINT_DISC_EUROPEAN))
             save_checkpoint(disc_Asian, opt_disc, os.path.join(save_dir, config.CHECKPOINT_DISC_ASIAN))
 
-        # Обновляем tensorboard
+        # Обновляем tensorboard (тестовые изображения)
         if config.USE_TENSORBOARD:
-            writer.add_image("Generated images", model_test.test(), global_step=epoch)
+            writer.add_image("Generated images", model_test(gen_European, gen_Asian), global_step=epoch)
 
 
 if __name__ == "__main__":
