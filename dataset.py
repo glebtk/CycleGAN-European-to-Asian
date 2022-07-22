@@ -46,23 +46,3 @@ class EuropeanAsianDataset(Dataset):
         asian_image = augmentations["image0"]
 
         return european_image, asian_image
-
-
-def test():
-    dataset = EuropeanAsianDataset(
-        root_european=config.TRAIN_DIR + "/European",
-        root_asian=config.TRAIN_DIR + "/Asian",
-        transform=config.train_transforms
-    )
-
-    data_loader = DataLoader(
-        dataset,
-        batch_size=config.BATCH_SIZE,
-        shuffle=True,
-        num_workers=config.NUM_WORKERS,
-        pin_memory=True
-    )
-
-
-if __name__ == "__main__":
-    test()
