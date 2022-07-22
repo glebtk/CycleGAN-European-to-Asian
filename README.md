@@ -1,10 +1,9 @@
-
 # European To Asian CycleGAN
+
+
 ## Что такое CycleGAN?
 
 ---
-
-
 **CycleGAN** - это архитектура нейронной сети, позволяющая
 проводить трансформации между изображениями двух разных распределений.<br>
 Простым языком, это штука, которая может **из одних картинок делать другие**.
@@ -21,6 +20,8 @@
 **Подробнее можно почитать в оригинальной статье на Архиве**
 [![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/pdf/1703.10593.pdf).
 
+
+
 ## Описание проекта
 
 ---
@@ -32,10 +33,11 @@
 
 **Главная проблема** - отсутствие пар изображений.<br>
 
-Поскольку у нас не может быть двух фотографий, где один и тот же 
+Поскольку у нас не может быть двух фотографий, где **один и тот же** 
 человек азиат и европеец, было решено использовать 
 циклический GAN (CycleGAN), так как данная архитектура не требует 
 пар изображений.
+
 
 ### Реализация
 
@@ -45,7 +47,8 @@
 
 Использована оригинальная идея циклического GAN'а. 
 Архитектура дискриминатора сохранена, в архитектуру генератора
-для оптимизации вычислений внесены небольшие изменения.
+внесены небольшие изменения для оптимизации вычислений.
+
 
 ### Архитектура проекта
 
@@ -74,12 +77,8 @@
 
 **Тесты**
 
-![Картинка][tests1]<br>
-Здесь реализовано тестирование работы генераторов 
-в процессе обучения.
-
 ![Картинка][tests2]<br>
-А здесь тестирование работы датасета и аугментаций.
+Здесь реализовано тестирование работы датасета и аугментаций.
 
 **Утилиты**
 
@@ -95,15 +94,16 @@
 
 
 
-
 ## Примеры работы
 
 ---
 Как можно видеть на изображении ниже, результатом работы 
-модели являются лица, которые на низком уровне идентичны оригинальным,
+модели являются лица, которые на базовом уровне идентичны оригинальным,
 а на высоком приобрели характерные азиатские признаки
 
 ![Картинка][results]<br>
+
+
 
 ## Датасет
 
@@ -132,49 +132,61 @@
 
 ![Картинка][asian_dataset]
 
+
+
 ## Рекомендации к обучению
 
 ---
 * Приведенных выше результатов можно добиться обучая 
 модель в **течении 100 эпох** со стандартными настройками config,
-а далее с шагом в 5 эпох **снизить learning rate до 3e-5**.
-* До начала обучения можно эксперементально увеличить параметр
-     **lambda cycle** до 15-20
-* **При изменении размеров** входного избражения следует изменять 
+а далее, **в течении 50 эпох** снизить learning rate до нуля.
+
+* **При изменении размеров** входного изображения следует изменять 
   количество **residual** слоёв. Например, для изображений 128x128 
   достаточно всего шесть
-* Параметр **batch size** рекомендовано оставить равным однму.
-  Эксперементально выяснено, что увеличение размера батчей не даёт 
-  существенного прироста к скорости сходимости сети
+
+* Параметр **batch size** рекомендовано оставить равным одному.
+  Экспериментально выяснено, что увеличение размера батчей не даёт 
+  существенного прироста к скорости сходимости модели
+
 * Обучать модель рекомендуется с использованием **GPU**
+
+
 
 ## Colab Notebook
 
 ---
 **Быстро протестировать работу нейросети с предобученными весами 
-можно в Google Colab**
-[![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1tgz_iiSEL-iSf1DCM4lXCJ0WJUT061FS?usp=sharing).
+можно в Google Colab** 
+
+[![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1tgz_iiSEL-iSf1DCM4lXCJ0WJUT061FS?usp=sharing)
 
 ## Способы связи
 
 ---
-**E-mail:** tutikgv@gmail.com <br>
-**Telegram:** @glebtutik
+[![Mail](https://i.imgur.com/HILZFT2.png)](mailto:tutikgv@gmail.com)
+**E-mail:**
+[tutikgv@gmail.com](mailto:tutikgv@gmail.com) <br>
+
+[![Telegram](https://i.imgur.com/IMICyTA.png)](https://t.me/glebtutik)
+**Telegram:**
+https://t.me/glebtutik <br>
+
 
 
 [horses]: https://i.imgur.com/KSKjn8l.jpg "Horses"
 [apples]: https://i.imgur.com/PAciYyU.jpg "Apples"
 
-[results]: https://i.imgur.com/74P7nND.png "Results"
+[results]: https://i.imgur.com/QospezB.png "Results"
 
-[config]: https://i.imgur.com/d73gkWx.png "Config"
-[train]: https://i.imgur.com/VBHs7ZT.png "Train"
-[models]: https://i.imgur.com/FGaOszf.png "Models"
-[dataset]: https://i.imgur.com/dbcIfM5.png "Dataset"
-[tests1]: https://i.imgur.com/pXvQ6O9.png "Model test"
-[tests2]: https://i.imgur.com/YksQDba.png "Dataset test"
-[utils]: https://i.imgur.com/KUfypn6.png "Utils"
-[download]: https://i.imgur.com/5NmQcQY.png "Download files"
+[config]: https://i.imgur.com/Is4ep4e.png "Config"
+[train]: https://i.imgur.com/C3BSkBQ.png "Train"
+[models]: https://i.imgur.com/8sUrEAq.png "Models"
+[dataset]: https://i.imgur.com/XtzMzzT.png "Dataset"
+[tests1]: https://i.imgur.com/ZS9Mepm.png "Model test"
+[tests2]: https://i.imgur.com/xAo0KXY.png "Dataset test"
+[utils]: https://i.imgur.com/YOuxySI.png "Utils"
+[download]: https://i.imgur.com/OMIrDvf.png "Download files"
 
 
 [asian_dataset]: https://i.imgur.com/8WlZwwe.jpeg "Датасет asian"
