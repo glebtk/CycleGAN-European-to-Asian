@@ -2,7 +2,9 @@ import os
 import sys
 import torch
 import config
+import numpy as np
 
+from PIL import Image
 from datetime import datetime
 
 
@@ -56,13 +58,34 @@ def get_current_time():
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 
+def model_test(gen_E, gen_A, img_dir="test_images"):
+    # Загружаем и подготавливаем картинки:
+    images = [img for img in os.listdir(img_dir) if img.endswith(".png") or img.endswith(".jpg")]  # Names
+    images = [Image.open(os.path.join(img_dir, img)).convert("RGB") for img in images]  # Names -> PIL Images
+    images = [np.array(img) for img in images]  # PIL Images -> np.arrays
+    images = [config.test_transforms(image=img)["image"] for img in images]  # Transforms
+    images = [img.to(config.DEVICE) for img in images]
+
+    # Генерируем изображения:
+    pred_E = [postprocessing(gen_E(img.detach())) for img in images]
+    pred_A = [postprocessing(gen_A(img.detach())) for img in images]
+
+    images = [postprocessing(img.detach()) for img in images]
+
+    # Собираем всё вместе:
+    images = np.concatenate(images, axis=2)
+    pred_E = np.concatenate(pred_E, axis=2)
+    pred_A = np.concatenate(pred_A, axis=2)
+
+    return np.concatenate((images, pred_E, pred_A), axis=1)
+
+
 def postprocessing(tensor):
     # Конвертируем в np.array
     image = tensor.cpu().detach().numpy()
 
-    # Если на вход пришел батч, берем из него только последнее изображение
     if len(image.shape) == 4:
-        image = image[-1, :, :, :]
+        image = image[0, :, :, :]
 
     # Производим денормализацию
     for channel in range(config.IN_CHANNELS):
