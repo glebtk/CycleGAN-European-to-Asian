@@ -2,6 +2,7 @@
 /__pycache__/*
 __test.py
 /runs/*
+/venv/
 
 # Не загружать тестовые картинки
 /test_images/**
