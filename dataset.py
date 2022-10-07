@@ -1,8 +1,8 @@
 import os
-import config
-import numpy as np
+import cv2
+import torch
 
-from PIL import Image
+from torchvision.io import read_image
 from torch.utils.data import Dataset, DataLoader
 
 
@@ -35,9 +35,11 @@ class EuropeanAsianDataset(Dataset):
         european_path = os.path.join(self.root_european, european_name)
         asian_path = os.path.join(self.root_asian, asian_name)
 
-        # Получаем изображения и конвертируем в np.array
-        european_image = np.array(Image.open(european_path).convert("RGB"))
-        asian_image = np.array(Image.open(asian_path).convert("RGB"))
+        # Открываем изображения
+        european_image = cv2.imread(european_path, 1)
+        european_image = cv2.cvtColor(european_image, cv2.COLOR_BGR2RGB)
+        asian_image = cv2.imread(asian_path, 1)
+        asian_image = cv2.cvtColor(asian_image, cv2.COLOR_BGR2RGB)
 
         # Применяем аугментации
         augmentations = self.transform(image=european_image, image0=asian_image)

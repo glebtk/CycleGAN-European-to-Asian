@@ -1,5 +1,7 @@
 import os
 import sys
+
+import cv2
 import torch
 import config
 import numpy as np
@@ -61,8 +63,8 @@ def get_current_time():
 def model_test(gen_E, gen_A, img_dir="test_images"):
     # Загружаем и подготавливаем картинки:
     images = [img for img in os.listdir(img_dir) if img.endswith(".png") or img.endswith(".jpg")]  # Names
-    images = [Image.open(os.path.join(img_dir, img)).convert("RGB") for img in images]  # Names -> PIL Images
-    images = [np.array(img) for img in images]  # PIL Images -> np.arrays
+    images = [cv2.imread(os.path.join(img_dir, img), 1) for img in images]
+    images = [cv2.cvtColor(img, cv2.COLOR_BGR2RGB) for img in images]
     images = [config.test_transforms(image=img)["image"] for img in images]  # Transforms
     images = [img.to(config.DEVICE) for img in images]
 
