@@ -177,7 +177,7 @@ https://t.me/glebtutik <br>
 [horses]: https://i.imgur.com/KSKjn8l.jpg "Horses"
 [apples]: https://i.imgur.com/PAciYyU.jpg "Apples"
 
-[results]: https://imgur.com/y3xpAnZ "Results"
+[results]: https://i.imgur.com/y3xpAnZ.png "Results"
 
 [config]: https://i.imgur.com/Is4ep4e.png "Config"
 [train]: https://i.imgur.com/C3BSkBQ.png "Train"
