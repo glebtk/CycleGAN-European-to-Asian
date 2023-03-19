@@ -12,36 +12,36 @@ class EuropeanAsianDataset(Dataset):
         self.root_asian = root_asian
         self.transform = transform
 
-        # Получаем списки имен изображений обоих классов
+        # Getting lists of image names of both classes
         self.european_names = [name for name in os.listdir(root_european) if name.endswith(".jpg")]
         self.asian_names = [name for name in os.listdir(root_asian) if name.endswith(".jpg")]
 
-        # Находим количество изображений каждого класса
+        # Find the number of images of each class
         self.european_len = len(self.european_names)
         self.asian_len = len(self.asian_names)
 
-        # Определяем условную длину датасета
+        # We determine the length of the dataset
         self.dataset_len = max(self.european_len, self.asian_len)
 
     def __len__(self):
         return self.dataset_len
 
     def __getitem__(self, index):
-        # Получаем имена изображений
+        # Getting the names of the images
         european_name = self.european_names[index % self.european_len]
         asian_name = self.asian_names[index % self.asian_len]
 
-        # Получаем полные пути к изображениям
+        # Getting full paths to images
         european_path = os.path.join(self.root_european, european_name)
         asian_path = os.path.join(self.root_asian, asian_name)
 
-        # Открываем изображения
+        # Opening images
         european_image = cv2.imread(european_path, 1)
         european_image = cv2.cvtColor(european_image, cv2.COLOR_BGR2RGB)
         asian_image = cv2.imread(asian_path, 1)
         asian_image = cv2.cvtColor(asian_image, cv2.COLOR_BGR2RGB)
 
-        # Применяем аугментации
+        # Apply augmentation
         augmentations = self.transform(image=european_image, image0=asian_image)
 
         european_image = augmentations["image"]

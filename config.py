@@ -5,14 +5,14 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
 
-# Предустановки
+# Presets
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 IMAGE_SIZE = 256
 IN_CHANNELS = 3
 NUM_RESIDUALS = 8
 NUM_WORKERS = 2
 
-# Обучение
+# Training process
 NUM_EPOCHS = 100
 BATCH_SIZE = 1
 LEARNING_RATE = 3e-4
@@ -21,12 +21,12 @@ LOAD_MODEL = False
 SAVE_MODEL = True
 USE_TENSORBOARD = True
 
-# Датасет
+# Dataset
 TRAIN_DIR = "dataset/train"
 DATASET_MEAN = np.array([0.5, 0.5, 0.5])
 DATASET_STD = np.array([0.5, 0.5, 0.5])
 
-# Другое
+# Other
 CHECKPOINT_DIR = "checkpoints"
 CHECKPOINT_GEN_EUROPEAN = "gen_european.pth.tar"
 CHECKPOINT_GEN_ASIAN = "gen_asian.pth.tar"

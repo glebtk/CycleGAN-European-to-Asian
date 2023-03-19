@@ -1,5 +1,5 @@
-import config
 import torch
+import config
 import torch.nn as nn
 
 
@@ -35,9 +35,9 @@ class Discriminator(nn.Module):
         )
 
         layers = []
-        in_channels = features[0]  # 64 по дефолту
+        in_channels = features[0]  # 64 by default
         for feature in features[1:]:
-            # На последнем шаге stride=1, на предыдущих stride=2
+            # In the last step stride=1, in the previous stride=2
             layers.append(Block(in_channels, feature, stride=1 if feature == features[-1] else 2))
             in_channels = feature
         layers.append(nn.Conv2d(in_channels, 1, kernel_size=4, stride=1, padding=1, padding_mode="zeros"))
@@ -45,5 +45,5 @@ class Discriminator(nn.Module):
         self.model = nn.Sequential(*layers)
 
     def forward(self, x):
-        x = self.initial(x)  # Первый слой
-        return torch.sigmoid(self.model(x))  # Добавляем остальные слои
+        x = self.initial(x)  # First layer
+        return torch.sigmoid(self.model(x))  # Adding the remaining layers

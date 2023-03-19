@@ -1,7 +1,6 @@
 import os
-import sys
-
 import cv2
+import sys
 import torch
 import config
 import numpy as np
@@ -28,7 +27,7 @@ def load_checkpoint(model, optimizer, lr, checkpoint_file):
             param_group["lr"] = lr
 
     except FileNotFoundError:
-        print(f"Ошибка: не удалось найти {checkpoint_file}")
+        print(f"Error: couldn't find {checkpoint_file}")
         return
 
 
@@ -42,10 +41,10 @@ def get_last_checkpoint(model_name):
 
         return os.path.join(last_checkpoint_directory, model_name)
     except IndexError:
-        print(f"Ошибка: в директории {config.CHECKPOINT_DIR} нет сохраненных чекпоинтов")
+        print(f"Error: there are no saved checkpoints in the {config.CHECKPOINT_DIR} directory")
         sys.exit(1)
     except FileNotFoundError:
-        print(f'Ошибка: не удалось загрузить {model_name}')
+        print(f'Error: failed to load {model_name}')
         sys.exit(1)
 
 
@@ -53,7 +52,7 @@ def make_directory(folder_path):
     try:
         os.makedirs(folder_path)
     except FileExistsError:
-        print("Ошибка: директория ", folder_path, " уже существует")
+        print(f"Error: directory \"{folder_path}\" already exists")
 
 
 def get_current_time():
@@ -61,20 +60,20 @@ def get_current_time():
 
 
 def model_test(gen_E, gen_A, img_dir="test_images"):
-    # Загружаем и подготавливаем картинки:
+    # We upload and prepare images:
     images = [img for img in os.listdir(img_dir) if img.endswith(".png") or img.endswith(".jpg")]  # Names
     images = [cv2.imread(os.path.join(img_dir, img), 1) for img in images]
     images = [cv2.cvtColor(img, cv2.COLOR_BGR2RGB) for img in images]
     images = [config.test_transforms(image=img)["image"] for img in images]  # Transforms
     images = [img.to(config.DEVICE) for img in images]
 
-    # Генерируем изображения:
+    # Generating images:
     pred_E = [postprocessing(gen_E(img.detach())) for img in images]
     pred_A = [postprocessing(gen_A(img.detach())) for img in images]
 
     images = [postprocessing(img.detach()) for img in images]
 
-    # Собираем всё вместе:
+    # Putting everything together:
     images = np.concatenate(images, axis=2)
     pred_E = np.concatenate(pred_E, axis=2)
     pred_A = np.concatenate(pred_A, axis=2)
@@ -83,13 +82,11 @@ def model_test(gen_E, gen_A, img_dir="test_images"):
 
 
 def postprocessing(tensor):
-    # Конвертируем в np.array
     image = tensor.cpu().detach().numpy()
 
     if len(image.shape) == 4:
         image = image[0, :, :, :]
 
-    # Производим денормализацию
     for channel in range(config.IN_CHANNELS):
         image[channel] = image[channel] * config.DATASET_STD[channel] + config.DATASET_MEAN[channel]
         image[channel] *= 255

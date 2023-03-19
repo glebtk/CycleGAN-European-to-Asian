@@ -1,125 +1,41 @@
-# European To Asian CycleGAN
-![Картинка][cover]<br>
+# European to Asian CycleGAN
 
-## Что такое CycleGAN?
+![Cover image](https://i.imgur.com/4yzDJau.png)
 
+## Introduction
 
-**CycleGAN** - это архитектура нейронной сети, позволяющая
-проводить трансформации из одного домена изображений в другой
-без однозначного их сопоставления.<br>
-Простыми словами, это штука, которая может **из одних картинок делать другие**,
-не используя при обучении строгие пары изображений.
+CycleGAN is a neural network architecture that enables transformations
+from one image domain to another without requiring paired images for
+training. In this project, the aim is to use CycleGAN to transform 
+the appearance of European faces into Asian faces while retaining 
+the original identity.
 
-**Например**, можно превратить изображения лошадей в изображения
-зебр и наоборот:
+## Implementation
 
-![Картинка][horses]<br>
+The project is implemented in Python 3 using the PyTorch deep 
+learning framework. Real-time tracking of the learning process
+is implemented using TensorBoard. The original CycleGAN 
+architecture was used, with minor modifications to the generator
+architecture to optimize calculations.
 
-Или превратить яблоки в апельсины:
+The project architecture consists of the following files:
 
-![Картинка][apples]<br>
+- `config.py`: Configuration file where hyperparameters, training settings, augmentation, and other settings can be changed.
+- `train.py`: Main training cycle of the neural network, including loading and saving checkpoints during training.
+- `generator.py`: Contains the generator class.
+- `discriminator.py`: Contains the discriminator class.
+- `dataset.py`: Implements the dataset class.
+- `test_dataset.py`: Tests the dataset and augmentations.
+- `utils.py`: Contains auxiliary functions such as checkpoint loading and image post-processing.
+- `download_files.py`: Script that downloads the dataset, pre-trained weights, and test images in one click.
 
-**Подробнее можно почитать в оригинальной статье на Архиве**
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/pdf/1703.10593.pdf).
+## Dataset
 
-
-
-## Описание проекта
-
-
-### Идея 
-
-**Главная идея** - научить нейросеть изменять лицо европейской внешности 
-таким образом, чтобы оно считывалось человеком как азиатское, но
-при этом не теряло узнаваемости.
-
-**Главная проблема** - отсутствие пар изображений.<br>
-
-Поскольку у нас не может быть двух фотографий, где **один и тот же** 
-человек имеет азиатскую и европейскую внешность, было решено использовать 
-циклический GAN (CycleGAN), так как данная архитектура не требует 
-пар изображений.
-
-
-### Реализация
-
-Проект реализован на **Python 3** с использованием фреймворка 
-для глубокого обучения **PyTorch**. Отслеживание процесса обучения
-в реальном времени реализовано с помощью **TensorBoard**.<br>
-
-Использована оригинальная идея циклического GAN'а. 
-Архитектура дискриминатора сохранена, в архитектуру генератора
-внесены небольшие изменения для оптимизации вычислений.
-
-
-### Архитектура проекта
-
-**Файл конфигурации**
-
-![Картинка][config]<br>
-Фактически представляет собой "приборную панель" всего проекта.
-Здесь можно изменять гиперпараметры, настройки обучения,
-аугментации и т.д.
-
-**Обучение**
-
-![Картинка][train]<br>
-Здесь реализован главный цикл обучения нейронной сети, а также загрузка 
-и сохранение чекпоинтов в процессе обучения.
-
-**Модели**
-
-![Картинка][models]<br>
-В этих документах находятся классы генератора и дискриминатора.
-
-**Датасет**
-
-![Картинка][dataset]<br>
-Здесь реализован кастомный датасет.
-
-**Тесты**
-
-![Картинка][tests2]<br>
-Здесь реализовано тестирование работы датасета и аугментаций.
-
-**Утилиты**
-
-![Картинка][utils]<br>
-Этот документ содержит некоторые вспомогательные функции.
-Такие, как загрузка чекпоинта, постпроцессинг изображений, и т.д.
-
-**Загрузка файлов**
-
-![Картинка][download]<br>
-Скрипт, позволяющий в одно нажатие загрузить датасет, 
-предобученные веса и тестовые изображения.
-
-
-
-## Примеры работы
-
-
-Как можно видеть на изображении ниже, результатом работы 
-модели являются лица, которые на базовом уровне идентичны оригинальным,
-а на высоком приобрели характерные азиатские признаки.
-
-![Картинка][results]<br>
-
-
-
-## Датасет
-
-
-* **Датасет для обучения нейронной сети состоит из 
-16384 изображений лиц** размера 256x256 пикселей, из 
-которых 8192 стереотипно европейской внешности, и 8192 
-стереотипно азиатской.
-
-* **Женских** и **мужских** лиц примерно поровну.
-
-* Основную часть составляют лица условных 
-возрастных рамок **20-40 лет.**
-
+The dataset used in this project is a custom dataset consisting 
+of 16,384 images of faces, with 8,192 stereotypically European 
+faces and 8,192 stereotypically Asian faces. The dataset includes
+both male and female individuals, with a main age range of 20-40
+years.
 
 #### Class A: 8192 European<br> 
    - ~4096 Female (~10-70)
@@ -135,37 +51,55 @@
 ![Картинка][asian_dataset]
 
 
+## Results
 
-## Рекомендации к обучению
+The model successfully transforms the appearance of European 
+faces into Asian faces while retaining the original identity. 
+The resulting images have characteristic Asian features while 
+maintaining the basic features of the original European faces.
 
+![Results of the model inference](https://i.imgur.com/y3xpAnZ.png)
 
-* Приведенных выше результатов можно добиться обучая 
-модель в **течении 30 эпох** со стандартными настройками config,
-а далее, **в течении 10 эпох** снизить learning rate до нуля.
+## Training Tips
 
-* **При изменении размеров** входного изображения следует изменять 
-  количество **residual** слоёв. Например, для изображений 128x128 
-  достаточно всего шесть
+Some tips for training the model include:
 
-* Параметр **batch size** рекомендовано оставить равным одному.
-  Экспериментально выяснено, что увеличение размера батчей,
-  в данном случае, не даёт 
-  существенного прироста к скорости сходимости модели
-
-* Обучать модель рекомендуется с использованием **GPU**
-
-
+- Training the model for 30 epochs with standard config settings and then reducing the learning rate to zero for 10 epochs.
+- Adjusting the number of residual layers when resizing the input image (e.g., using six residual layers for 128x128 images).
+- Leaving the batch size parameter equal to one as increasing the batch size does not significantly increase the convergence rate of the model.
+- Training the model using GPU.
 
 ## Colab Notebook
 
+A Colab notebook is available to quickly test the pre-trained model inference:
 
-**Быстро протестировать работу нейросети с предобученными весами 
-можно в Google Colab** 
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1tgz_iiSEL-iSf1DCM4lXCJ0WJUT061FS?usp=sharing)
 
-[![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1tgz_iiSEL-iSf1DCM4lXCJ0WJUT061FS?usp=sharing)
+## Ethical Considerations
 
-## Способы связи
+It is important to consider the ethical implications of any project 
+involving sensitive topics such as racial and cultural identity. 
+While this project focuses on transforming the appearance of European
+faces into Asian faces, it is important to acknowledge that there 
+is no single "Asian appearance" and that individuals within the same
+cultural and racial group can have a wide range of physical appearances.
+It is crucial to approach such topics with sensitivity and to avoid 
+reinforcing harmful stereotypes or promoting discriminatory attitudes.
 
+The dataset used in this project was filtered for stereotypical 
+features, but it is important to be mindful of how the resulting 
+images are interpreted and used. Furthermore, this project is purely
+for academic and research purposes, and it is not intended to be 
+used for any harmful or discriminatory actions.
+
+
+## References
+
+- Zhu, J., Park, T., Isola, P., & Efros, A. A. (2017). Unpaired image-to-image translation using cycle-consistent adversarial networks. In Proceedings of the IEEE international conference on computer vision (pp. 2223-2232).
+
+## Contact Information
+
+If you have any questions or feedback, please feel free to contact me:
 
 [![Mail](https://i.imgur.com/HILZFT2.png)](mailto:tutikgv@gmail.com)
 **E-mail:**
@@ -175,21 +109,6 @@
 **Telegram:**
 https://t.me/glebtutik <br>
 
-[cover]: https://i.imgur.com/4yzDJau.png "Cover"
-
-[horses]: https://i.imgur.com/KSKjn8l.jpg "Horses"
-[apples]: https://i.imgur.com/PAciYyU.jpg "Apples"
-
-[results]: https://i.imgur.com/y3xpAnZ.png "Results"
-
-[config]: https://i.imgur.com/Is4ep4e.png "Config"
-[train]: https://i.imgur.com/C3BSkBQ.png "Train"
-[models]: https://i.imgur.com/8sUrEAq.png "Models"
-[dataset]: https://i.imgur.com/XtzMzzT.png "Dataset"
-[tests1]: https://i.imgur.com/ZS9Mepm.png "Model test"
-[tests2]: https://i.imgur.com/xAo0KXY.png "Dataset test"
-[utils]: https://i.imgur.com/YOuxySI.png "Utils"
-[download]: https://i.imgur.com/OMIrDvf.png "Download files"
 
 [european_dataset]: https://i.imgur.com/ZFswgK9.png "Датасет european"
 [asian_dataset]: https://i.imgur.com/6tG6lEg.png "Датасет asian"

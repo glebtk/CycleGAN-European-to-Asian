@@ -3,10 +3,10 @@ import zipfile
 import urllib.request
 
 
-# Предустановки
-LOAD_DATASET = True         # Загрузить датасет для обучения
-LOAD_CHECKPOINT = True      # Загрузить чекпоинт с предобученными весами
-LOAD_TEST_IMAGES = True     # Загрузить тестовые картинки
+# Presets
+LOAD_DATASET = True         # Upload a dataset for training
+LOAD_CHECKPOINT = True      # Upload a checkpoint with pre-trained weights
+LOAD_TEST_IMAGES = True     # Upload test images
 
 
 def download_and_unzip(url, path, name):
@@ -18,7 +18,6 @@ def download_and_unzip(url, path, name):
     dataset_zip.extractall(path)
 
 
-# Выполнение
 if __name__ == "__main__":
     if LOAD_DATASET:
         url = "https://gitlab.com/glebtutik/european_to_asian_files/-/raw/main/dataset/dataset.zip"
@@ -28,7 +27,7 @@ if __name__ == "__main__":
         download_and_unzip(url, path, file_name)
         os.remove(os.path.join(path, file_name))
 
-        print("=> Датасет загружен!")
+        print("=> The dataset is loaded!")
 
     if LOAD_CHECKPOINT:
         url = "https://gitlab.com/glebtutik/european_to_asian_files/-/raw/main/checkpoints/checkpoints.zip"
@@ -38,7 +37,7 @@ if __name__ == "__main__":
         download_and_unzip(url, path, file_name)
         os.remove(os.path.join(path, file_name))
 
-        print("=> Чекпоинт загружен!")
+        print("=> The checkpoint is loaded!")
 
     if LOAD_TEST_IMAGES:
         url = "https://gitlab.com/glebtutik/european_to_asian_files/-/raw/main/test_images/test_images.zip"
@@ -48,4 +47,4 @@ if __name__ == "__main__":
         download_and_unzip(url, path, file_name)
         os.remove(os.path.join(path, file_name))
 
-        print("=> Тестовые изображения загружены!")
+        print("=> Test images uploaded!")
