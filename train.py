@@ -134,11 +134,18 @@ def train():
             g_scaler.update()
 
             # Updating tensorboard (current fake images)
-            if config.USE_TENSORBOARD and idx % 100 == 0:
+            if config.USE_TENSORBOARD and idx % 128 == 0 and idx != 0:
                 fake_asian_image = postprocessing(fake_asian_image)
                 fake_european_image = postprocessing(fake_european_image)
                 current_images = np.concatenate((fake_asian_image, fake_european_image), axis=2)
                 writer.add_image(f"Current images", current_images, global_step=int(time.time()))
+
+                writer.add_scalar("Gen European Adversarial Loss", gen_European_adversarial_loss.item(), global_step=int(time.time()))
+                writer.add_scalar("Gen Asian Adversarial Loss", gen_Asian_adversarial_loss.item(), global_step=int(time.time()))
+                writer.add_scalar("Gen European Cycle Loss", gen_European_cycle_loss.item(), global_step=int(time.time()))
+                writer.add_scalar("Gen Asian Cycle Loss", gen_Asian_cycle_loss.item(), global_step=int(time.time()))
+                writer.add_scalar("Disc European Loss", disc_European_loss.item(), global_step=int(time.time()))
+                writer.add_scalar("Disc Asian Loss", disc_Asian_loss.item(), global_step=int(time.time()))
 
         # Saving models
         if config.SAVE_MODEL:
