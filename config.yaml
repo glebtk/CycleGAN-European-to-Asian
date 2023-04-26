@@ -9,7 +9,7 @@ batch_size: 1
 generator_learning_rate: 0.0003
 discriminator_learning_rate: 0.0003
 lambda_cycle: 3
-load_checkpoint: F
+load_checkpoint: false
 save_checkpoint: true
 num_workers: 2
 
