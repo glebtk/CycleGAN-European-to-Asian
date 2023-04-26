@@ -141,6 +141,10 @@ def get_config():
 
 def main():
     config = get_config()
+
+    if config.seed:
+        set_seed(config.seed)
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # Loading the dataset
