@@ -2,50 +2,50 @@ import os
 import cv2
 import sys
 import torch
-import config
 import numpy as np
 
-from PIL import Image
+from transforms import Transforms
 from datetime import datetime
 
 
-def save_checkpoint(model, optimizer, filename):
-    checkpoint = {
-        "state_dict": model.state_dict(),
-        "optimizer": optimizer.state_dict(),
-    }
-    torch.save(checkpoint, filename)
+def save_checkpoint(checkpoint, filepath):
+    if not filepath.endswith(".pth.tar"):
+        raise ValueError("Filepath should end with .pth.tar extension")
 
-
-def load_checkpoint(model, optimizer, lr, checkpoint_file):
     try:
-        checkpoint = torch.load(checkpoint_file, map_location=config.DEVICE)
-        model.load_state_dict(checkpoint["state_dict"])
-        optimizer.load_state_dict(checkpoint["optimizer"])
-
-        for param_group in optimizer.param_groups:
-            param_group["lr"] = lr
-
-    except FileNotFoundError:
-        print(f"Error: couldn't find {checkpoint_file}")
-        return
+        torch.save(checkpoint, filepath)
+        print(f"Checkpoint saved to {filepath}")
+    except Exception as e:
+        print(f"Error saving checkpoint: {e}")
+        raise
 
 
-def get_last_checkpoint(model_name):
+def load_checkpoint(filepath, device):
+    if not filepath.endswith(".pth.tar"):
+        raise ValueError("Filepath should end with .pth.tar extension")
+
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"Checkpoint file not found at {filepath}")
+
     try:
-        checkpoints = os.listdir(config.CHECKPOINT_DIR)
-        checkpoints = [d for d in checkpoints if os.path.isdir(os.path.join(config.CHECKPOINT_DIR, d))]
+        checkpoint = torch.load(filepath, map_location=device)
+        print(f"Checkpoint loaded from {filepath}")
+        return checkpoint
+    except Exception as e:
+        print(f"Error loading checkpoint: {e}")
+        raise
+
+
+def get_last_checkpoint(checkpoint_dir):
+    try:
+        checkpoints = os.listdir(checkpoint_dir)
+        checkpoints = [c for c in checkpoints if c.endswith(".pth.tar")]
         checkpoints.sort()
 
-        last_checkpoint_directory = os.path.join(config.CHECKPOINT_DIR, checkpoints[-1])
-
-        return os.path.join(last_checkpoint_directory, model_name)
+        return os.path.join(checkpoint_dir, checkpoints[-1])
     except IndexError:
-        print(f"Error: there are no saved checkpoints in the {config.CHECKPOINT_DIR} directory")
-        sys.exit(1)
-    except FileNotFoundError:
-        print(f'Error: failed to load {model_name}')
-        sys.exit(1)
+        print(f"Error: there are no saved checkpoints in the {checkpoint_dir} directory")
+        raise
 
 
 def make_directory(folder_path):
@@ -59,19 +59,23 @@ def get_current_time():
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 
-def model_test(gen_E, gen_A, img_dir="test_images"):
+def model_test(checkpoint, config, device, img_dir="test_images"):
+    gen_E = checkpoint["models"]["gen_European"]
+    gen_A = checkpoint["models"]["gen_Asian"]
+    transforms = Transforms(config.image_size, config.dataset_mean, config.dataset_std)
+
     # We upload and prepare images:
     images = [img for img in os.listdir(img_dir) if img.endswith(".png") or img.endswith(".jpg")]  # Names
     images = [cv2.imread(os.path.join(img_dir, img), 1) for img in images]
     images = [cv2.cvtColor(img, cv2.COLOR_BGR2RGB) for img in images]
-    images = [config.test_transforms(image=img)["image"] for img in images]  # Transforms
-    images = [img.to(config.DEVICE) for img in images]
+    images = [transforms.test_transforms(image=img)["image"] for img in images]  # Transforms
+    images = [img.to(device) for img in images]
 
     # Generating images:
-    pred_E = [postprocessing(gen_E(img.detach())) for img in images]
-    pred_A = [postprocessing(gen_A(img.detach())) for img in images]
+    pred_E = [postprocessing(gen_E(img.detach()), config) for img in images]
+    pred_A = [postprocessing(gen_A(img.detach()), config) for img in images]
 
-    images = [postprocessing(img.detach()) for img in images]
+    images = [postprocessing(img.detach(), config) for img in images]
 
     # Putting everything together:
     images = np.concatenate(images, axis=2)
@@ -81,14 +85,14 @@ def model_test(gen_E, gen_A, img_dir="test_images"):
     return np.concatenate((images, pred_E, pred_A), axis=1)
 
 
-def postprocessing(tensor):
+def postprocessing(tensor, config):
     image = tensor.cpu().detach().numpy()
 
     if len(image.shape) == 4:
         image = image[0, :, :, :]
 
-    for channel in range(config.IN_CHANNELS):
-        image[channel] = image[channel] * config.DATASET_STD[channel] + config.DATASET_MEAN[channel]
+    for channel in range(config.in_channels):
+        image[channel] = image[channel] * config.dataset_std[channel] + config.dataset_mean[channel]
         image[channel] *= 255
 
     return image.astype('uint8')
