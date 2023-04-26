@@ -12,7 +12,7 @@ lambda_cycle: 3
 load_checkpoint: false
 save_checkpoint: true
 num_workers: 2
-seed: null
+set_seed: false
 
 # Dataset:
 train_dir: dataset/train
