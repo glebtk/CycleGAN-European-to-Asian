@@ -115,8 +115,8 @@ def train(checkpoint, data_loader, device, config):
 
         # Save checkpoint
         if config.save_checkpoint:
-            print("\033[32m{}".format("=> Saving a checkpoint"))
-            save_checkpoint(checkpoint, os.path.join(config.checkpoint_dir, f"checkpoint_{train_name}.pth.tar"))
+            print("=> Saving a checkpoint")
+            save_checkpoint(checkpoint, os.path.join(config.checkpoint_dir, f"checkpoint_{train_name}_{epoch}.pth.tar"))
 
         # Updating tensorboard (test images)
         writer.add_image("Generated images", model_test(checkpoint, config, device), global_step=epoch)
@@ -142,8 +142,8 @@ def get_config():
 def main():
     config = get_config()
 
-    if config.seed:
-        set_seed(config.seed)
+    if config.set_seed:
+        set_seed()
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -165,7 +165,7 @@ def main():
 
     # Loading the latest checkpoint models
     if config.load_checkpoint:
-        print("\033[32m{}".format("=> Loading the last checkpoint"))
+        print("=> Loading the last checkpoint")
 
         checkpoint_path = get_last_checkpoint(config.checkpoint_dir)
         checkpoint = load_checkpoint(checkpoint_path, device)
