@@ -1,6 +1,7 @@
 import os
 import cv2
 import torch
+import random
 
 from torchvision.io import read_image
 from torch.utils.data import Dataset, DataLoader
@@ -15,6 +16,8 @@ class EuropeanAsianDataset(Dataset):
         # Getting lists of image names of both classes
         self.european_names = [name for name in os.listdir(root_european) if name.endswith(".jpg")]
         self.asian_names = [name for name in os.listdir(root_asian) if name.endswith(".jpg")]
+        random.shuffle(self.european_names)
+        random.shuffle(self.asian_names)
 
         # Find the number of images of each class
         self.european_len = len(self.european_names)
